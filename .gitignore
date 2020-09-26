@@ -6,6 +6,10 @@
 *.lo
 *.o
 *.obj
+*.iobj
+*.pdb
+*.ipdb
+*.ilk
 
 # Precompiled Headers
 *.gch
@@ -26,7 +30,31 @@
 *.a
 *.lib
 
+# Visual Studio local files
+*.suo
+*.db
+*.idb
+*.vcxproj
+*.user
+*.users
+*.filters
+.vs/*
+
 # Executables
 *.exe
 *.out
 *.app
+
+# Logs
+*.log
+*.tlog
+*.recipe
+
+# Assets
+*.obj
+*.mtl
+*.jpg
+*.png
+*.tga
+
+*.swp
