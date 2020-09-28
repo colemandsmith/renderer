@@ -70,6 +70,11 @@ void Texture::UseTexture() {
 	glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
+void Texture::UseTexture(GLenum textureUnit) {
+    glActiveTexture(textureUnit);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+}
+
 void Texture::ClearTexture() {
 	glDeleteTextures(1, &textureId);
 	textureId = 0;

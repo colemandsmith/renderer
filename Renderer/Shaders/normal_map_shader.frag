@@ -1,11 +1,14 @@
 #version 330
+
 in vec4 vCol;
 in vec2 texCoord;
-in vec3 normal;
 in vec3 fragPos;
 in vec4 directionalLightSpacePos;
+in mat3 TBN;
 
 out vec4 colour;
+
+vec3 mappedNormal;
 
 const int MAX_POINT_LIGHTS = 3;
 const int MAX_SPOT_LIGHTS = 3;
@@ -49,11 +52,12 @@ uniform int pointLightCount;
 uniform int spotLightCount;
 
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform sampler2D theTexture;
 uniform sampler2D directionalShadowMap;
+uniform sampler2D normalMap;
 uniform OmniShadowMap omniShadowMaps[MAX_POINT_LIGHTS + MAX_SPOT_LIGHTS];
 
 uniform Material material;
@@ -78,10 +82,10 @@ float CalcDirectionalShadowFactor(DirectionalLight light) {
 	float closest = texture(directionalShadowMap, projCoords.xy).r;
 	float current = projCoords.z;
 	
-	vec3 norm = normalize(normal);
+	vec3 norm = normalize(mappedNormal);
 	vec3 lightDir = normalize(light.direction);
 	
-	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+	float bias = max(0.05 * (1.0 - dot(mappedNormal, lightDir)), 0.005);
 	
 	// PCF to smooth out shadow
 	float shadow = 0.0;
@@ -135,14 +139,14 @@ float CalcOmniShadowFactor(PointLight pLight, int shadowIndex) {
 
 vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor) {
 	vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
-	float diffuseFactor = max(dot(normalize(normal), normalize(direction)), 0.0f);
+	float diffuseFactor = max(dot(normalize(mappedNormal), normalize(direction)), 0.0f);
 	vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f) ;
 	
 	vec4 specularColor = vec4(0, 0, 0, 0);
 	
 	if (diffuseFactor > 0.0f) {
 		vec3 fragToEye = normalize(eyePosition - fragPos);
-		vec3 reflectedVertex = normalize(reflect(direction, normalize(normal)));
+		vec3 reflectedVertex = normalize(reflect(direction, normalize(mappedNormal)));
 		float specularFactor = dot(fragToEye, reflectedVertex);
 		if (specularFactor > 0.0f) {
 			specularFactor = pow(specularFactor, material.shininess);
@@ -207,8 +211,15 @@ vec4 CalcSpotLights() {
 }
 
 void main() {
+	mappedNormal = texture(normalMap, texCoord).rgb;
+	
+	// convert to range -1, 1
+	mappedNormal = mappedNormal * 2.0 - 1.0;
+	mappedNormal = normalize(TBN * mappedNormal);
+	
+	
 	vec4 finalColor = CalcDirectionalLight();
-	finalColor += CalcPointLights();
-	finalColor += CalcSpotLights();
+	//finalColor += CalcPointLights();
+	//finalColor += CalcSpotLights();
     colour = texture(theTexture, texCoord) * finalColor;
 }

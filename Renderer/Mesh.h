@@ -1,6 +1,9 @@
 #pragma once
 
 #include <GL/glew.h>
+
+#include "Material.h"
+
 class Mesh {
 
 public:
@@ -13,6 +16,7 @@ public:
 	~Mesh();
 
 private:
+    Material* material;
 	GLuint VAO, VBO, IBO;
 	GLsizei indexCount;
 };

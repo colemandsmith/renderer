@@ -40,6 +40,9 @@ Texture brickTexture;
 Texture dirtTexture;
 Texture plainTexture;
 
+std::vector<Model*> modelList;
+
+Model brickModel;
 Model orangeCat;
 Model skull;
 
@@ -66,6 +69,25 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosit
 // Vertex Shader
 static const char* vShader = "Shaders/shader.vert";
 static const char* fShader = "Shaders/shader.frag";
+
+void CreateShaders() {
+    Shader* defaultShader = new Shader();
+    defaultShader->CreateFromFiles(vShader, fShader);
+    shaderList.push_back(defaultShader);
+
+    Shader* normalMapShader = new Shader();
+    normalMapShader->CreateFromFiles("Shaders/normal_map_shader.vert", "Shaders/normal_map_shader.frag");
+    shaderList.push_back(normalMapShader);
+
+    directionalShadowShader = Shader();
+    directionalShadowShader.CreateFromFiles("Shaders/directional_shadow_map.vert", "Shaders/directional_shadow_map.frag");
+
+    omniShadowShader.CreateFromFiles(
+        "Shaders/omni_shadow_map.vert",
+        "Shaders/omni_shadow_map.geom",
+        "Shaders/omni_shadow_map.frag"
+    );
+}
 
 void CalcAverageNormals(unsigned int* indices, unsigned int indexCount, 
                         GLfloat* vertices, unsigned int vertexCount, unsigned int vertexLength,
@@ -110,7 +132,7 @@ void CalcAverageNormals(unsigned int* indices, unsigned int indexCount,
 }
 
 
-void CreateObject() {
+void CreateSimplePolygons() {
     unsigned int indices[] = {
         0, 3, 1,
         1, 3, 2,
@@ -118,53 +140,192 @@ void CreateObject() {
         0, 1, 2
     };
     GLfloat vertices[] = {
-    //   x       y     z         u     v       nx    ny    nz
-        -1.0f, -1.0f, -0.6f,    0.0f, 0.0f,    0.0f, 0.0f, 0.0f,
-        0.0f, -1.0f, 1.0f,      0.5f, 0.0f,    0.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, -0.6f,     1.0f, 0.0f,    0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,       0.5f, 1.0f,    0.0f, 0.0f, 0.0f
+    //   x       y     z         u     v       nx    ny    nz      tx    ty   tz 
+        -1.0f, -1.0f, -0.6f,    0.0f, 0.0f,    0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+        0.0f, -1.0f, 1.0f,      0.5f, 0.0f,    0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, -0.6f,     1.0f, 0.0f,    0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,       0.5f, 1.0f,    0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
     };
 
+    CalcAverageNormals(indices, 12, vertices, 44, 11, 5);
+
     unsigned int floorIndices[] = {
-        0, 2, 1,
-        1, 2, 3,
+       0, 2, 1,
+       1, 2, 3,
     };
 
     GLfloat floorVertices[] = {
-        -10.0f, 0.0f, -10.f,   0.0f, 0.0f,     0.0f, -1.0f, 0.0f,
-        10.0f, 0.0f, -10.f,    10.0f, 0.0f,    0.0f, -1.0f, 0.0f,
-        -10.f, 0.0f, 10.0f,    0.0f, 10.0f,    0.0f, -1.0f, 0.0f,
-        10.0f, 0.0f, 10.0f,    10.0f, 10.0f,   0.0f, -1.0f, 0.0f,
+        -10.0f, 0.0f, -10.f,   0.0f, 0.0f,     0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+        10.0f, 0.0f, -10.f,    10.0f, 0.0f,    0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+        -10.f, 0.0f, 10.0f,    0.0f, 10.0f,    0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+        10.0f, 0.0f, 10.0f,    10.0f, 10.0f,   0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
     };
 
-    CalcAverageNormals(indices, 12, vertices, 32, 8, 5);
-
     Mesh* obj1 = new Mesh();
-    obj1->CreateMesh(vertices, indices, 32, 12);
+    obj1->CreateMesh(vertices, indices, 44, 12);
     meshList.push_back(obj1);
 
     Mesh* obj2 = new Mesh();
-    obj2->CreateMesh(vertices, indices, 32, 12);
+    obj2->CreateMesh(vertices, indices, 44, 12);
     meshList.push_back(obj2);
 
     Mesh* obj3 = new Mesh();
-    obj3->CreateMesh(floorVertices, floorIndices, 32, 6);
+    obj3->CreateMesh(floorVertices, floorIndices, 44, 6);
     meshList.push_back(obj3);
 }
 
-void CreateShaders() {
-    Shader* shader1 = new Shader();
-    shader1->CreateFromFiles(vShader, fShader);
-    shaderList.push_back(shader1);
+void SetupObjects() {
+    mainWindow = Window(1366, 768);
+    mainWindow.Initialize();
 
-    directionalShadowShader = Shader();
-    directionalShadowShader.CreateFromFiles("Shaders/directional_shadow_map.vert", "Shaders/directional_shadow_map.frag");
+    CreateSimplePolygons();
+    CreateShaders();
 
-    omniShadowShader.CreateFromFiles(
-        "Shaders/omni_shadow_map.vert",
-        "Shaders/omni_shadow_map.geom",
-        "Shaders/omni_shadow_map.frag"
+    camera = Camera(
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f),
+        -90.0f,
+        0.0f,
+        5.0f,
+        0.5f
     );
+
+    brickTexture = Texture("Textures/brick.png");
+    brickTexture.LoadTextureA();
+
+    dirtTexture = Texture("Textures/dirt.png");
+    dirtTexture.LoadTextureA();
+
+    plainTexture = Texture("Textures/plain.png");
+    plainTexture.LoadTextureA();
+
+    shinyMaterial = Material(4.0f, 256);
+    dullMaterial = Material(0.3f, 0);
+
+    brickModel = Model();
+    brickModel.LoadModelWithNormalMap("Models/brick01a.obj");
+
+    skull = Model();
+    skull.LoadModel("Models/SkullV.obj");
+
+    orangeCat = Model();
+    orangeCat.LoadModel("Models/orange_cat.obj");
+
+    mainLight = DirectionalLight(
+        2048, 2048,
+        1.0f, 0.53f, 0.3f,
+        0.1f, 0.8f,
+        -10.0f, -12.0f, 19.0f
+    );
+
+    pointLightCount = 0;
+
+    pointLights[0] = PointLight(
+        1024, 1024, 0.1f, 100.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f,
+        -1.0f, 2.0f, 0.0f,
+        0.3f, 0.2f, 0.1f
+    );
+    //pointLightCount++;
+    pointLights[1] = PointLight(
+        1024, 1024, 0.1f, 100.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f,
+        -4.0f, 3.0f, 0.0f,
+        0.3f, 0.2f, 0.1f
+    );
+    //pointLightCount++;
+
+    spotLightCount = 0;
+    spotLights[0] = SpotLight(
+        1024, 1024, 0.1f, 100.0f,
+        1.0f, 1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        20.0f
+    );
+    //spotLightCount++;
+
+    spotLights[1] = SpotLight(
+        1024, 1024, 0.1f, 100.0f,
+        1.0f, 1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, -1.5f, 0.0f,
+        -100.0f, -1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        20.0f
+    );
+    //spotLightCount++;
+
+    std::vector<std::string> skyboxFaces;
+    // order is important
+    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
+    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
+    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
+    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
+    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
+    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
+
+    skybox = Skybox(skyboxFaces);
+}
+
+void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
+
+    shaderList[1]->UseShader();
+
+    uniformModel = shaderList[1]->GetModelLocation();
+    uniformProjection = shaderList[1]->GetProjectionLocation();
+    uniformView = shaderList[1]->GetViewLocation();
+    uniformEyePosition = shaderList[1]->GetEyePositionLocation();
+    uniformSpecularIntensity = shaderList[1]->GetSpecularIntensityLocation();
+    uniformShininess = shaderList[1]->GetShininessLocation();
+
+    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniform3f(
+        uniformEyePosition,
+        camera.GetCameraPosition().x,
+        camera.GetCameraPosition().y,
+        camera.GetCameraPosition().z
+    );
+
+    shaderList[1]->SetDirectionalLight(&mainLight);
+    // first three texture buffers already in use, so start from unit 4
+    shaderList[1]->SetPointLights(pointLights, pointLightCount, 4, 1);
+    shaderList[1]->SetSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
+    shaderList[1]->SetDirectionalLightTransform(&mainLight.CalculateLightTransform());
+
+    mainLight.GetShadowMap()->Read(GL_TEXTURE3);
+    shaderList[1]->SetTexture(1);
+    shaderList[1]->SetNormalMap(2);
+    shaderList[1]->SetDirectionalShadowMap(3);
+
+    glm::vec3 lowerLight = camera.GetCameraPosition();
+    lowerLight.y -= 1.3f;
+    lowerLight.x += 1.3f;
+    spotLights[1].SetFlash(lowerLight, camera.GetCameraDirection());
+
+    shaderList[1]->Validate();
+
+    glm::mat4 model(1.0f);
+
+    catAngle += 0.1;
+    if (catAngle > 360) {
+        catAngle = 0.1f;
+    }
+
+    model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -1.0f));
+    //model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+    dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+
+    brickModel.RenderModel();
 }
 
 void RenderScene() {
@@ -260,9 +421,7 @@ void OmniShadowMapPass(PointLight* light) {
 }
 
 void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
-
-
-    glViewport(0, 0, 1366, 768);
+    glViewport(0, 0, 1920, 1080);
 
     // clear window
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -309,101 +468,6 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
     RenderScene();
 }
 
-void SetupObjects() {
-    mainWindow = Window(1366, 768);
-    mainWindow.Initialize();
-
-    CreateObject();
-    CreateShaders();
-
-    camera = Camera(
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f),
-        -90.0f,
-        0.0f,
-        5.0f,
-        0.5f
-    );
-
-    brickTexture = Texture("Textures/brick.png");
-    brickTexture.LoadTextureA();
-
-    dirtTexture = Texture("Textures/dirt.png");
-    dirtTexture.LoadTextureA();
-
-    plainTexture = Texture("Textures/plain.png");
-    plainTexture.LoadTextureA();
-
-    shinyMaterial = Material(4.0f, 256);
-    dullMaterial = Material(0.3f, 4);
-
-    orangeCat = Model();
-    orangeCat.LoadModel("Models/12221_Cat_v1_l3.obj");
-
-    skull = Model();
-    skull.LoadModel("Models/SkullV.obj");
-
-    mainLight = DirectionalLight(
-        2048, 2048,
-        1.0f, 0.53f, 0.3f,
-        0.1f, 0.8f,
-        -10.0f, -12.0f, 19.0f
-    );
-
-    pointLightCount = 0;
-
-    pointLights[0] = PointLight(
-        1024, 1024, 0.1f, 100.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 1.0f,
-        -1.0f, 2.0f, 0.0f,
-        0.3f, 0.2f, 0.1f
-    );
-    pointLightCount++;
-    pointLights[1] = PointLight(
-        1024, 1024, 0.1f, 100.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f,
-        -4.0f, 3.0f, 0.0f,
-        0.3f, 0.2f, 0.1f
-    );
-    pointLightCount++;
-
-    spotLightCount = 0;
-    spotLights[0] = SpotLight(
-        1024, 1024, 0.1f, 100.0f,
-        1.0f, 1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, -1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        20.0f
-    );
-    spotLightCount++;
-
-    spotLights[1] = SpotLight(
-        1024, 1024, 0.1f, 100.0f,
-        1.0f, 1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, -1.5f, 0.0f,
-        -100.0f, -1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        20.0f
-    );
-    spotLightCount++;
-
-    std::vector<std::string> skyboxFaces;
-    // order is important
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
-
-    skybox = Skybox(skyboxFaces);
-}
-
 void PerformRenderPasses(glm::mat4 projection) {
     DirectionalShadowMapPass(&mainLight);
     for (size_t i = 0; i < pointLightCount; i++) {
@@ -413,6 +477,7 @@ void PerformRenderPasses(glm::mat4 projection) {
         OmniShadowMapPass(&spotLights[i]);
     }
     RenderPass(projection, camera.CalculateViewMatrix());
+    RenderNormalMapModels(projection, camera.CalculateViewMatrix());
 }
 
 int main() {

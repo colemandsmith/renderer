@@ -29,6 +29,7 @@
 *.la
 *.a
 *.lib
+*.enc
 
 # Visual Studio local files
 *.suo
@@ -56,5 +57,6 @@
 *.jpg
 *.png
 *.tga
+*.tif
 
 *.swp
