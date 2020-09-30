@@ -1,8 +1,9 @@
 #pragma once
 
+#include <map>
 #include <stdio.h>
-#include <GL\glew.h>
-#include <GLFW\glfw3.h>
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
 
 class Window {
 public:
@@ -14,32 +15,30 @@ public:
 	GLfloat getBufferWidth() { return bufferWidth; };
 	GLfloat getBufferHeight() { return bufferHeight; };
 
-	bool getShouldClose() { return glfwWindowShouldClose(mainWindow); }
-
-	bool* getKeys() { return keys;  }
+    std::map<char, bool> getKeys() { return keys;  }
 	GLfloat getXChange();
 	GLfloat getYChange();
 
-	void SwapBufffers() { glfwSwapBuffers(mainWindow); }
+    void handleKeys(SDL_Event event);
+    void handleMouse(SDL_Event event);
+
+	void SwapBufffers() { SDL_GL_SwapWindow(mainWindow); }
 
 	~Window();
 
 private:
-	GLFWwindow* mainWindow;
+    SDL_Window* mainWindow;
+    SDL_GLContext context;
 
 	GLint width, height;
 	GLint bufferHeight, bufferWidth;
 
-	bool keys[1024];
+	std::map<char, bool> keys;
 
-	GLfloat lastX;
-	GLfloat lastY;
-	GLfloat xChange;
-	GLfloat yChange;
+	Sint32 lastX;
+    Sint32 lastY;
+    Sint32 xChange;
+    Sint32 yChange;
 	bool mouseFirstMoved;
-
-	void createCallBacks();
-	static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
-	static void handleMouse(GLFWwindow* window, double xPos, double yPos);
 };
 

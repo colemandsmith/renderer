@@ -3,63 +3,54 @@
 Window::Window() {
 	width = 1600;
 	height = 1200;
-
-    for (size_t i = 0; i < 1024; i++) {
-        keys[i] = 0;
-    }
-    xChange = 0.0f;
-    yChange = 0.0f;
 }
 
 Window::Window(GLint windowWidth, GLint windowHeight) {
 	width = windowWidth;
 	height = windowHeight;
 
-    for (size_t i = 0; i < 1024; i++) {
-        keys[i] = 0;
-    }
     xChange = 0.0f;
     yChange = 0.0f;
 }
 
 int Window::Initialize() {
     // Initialize GLFW
-    if (!glfwInit()) {
-        printf("GLFW initialization failed");
-        glfwTerminate();
-        return 1;
+    if (!SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+        printf("SDL initialization failed");
+        return -1;
     }
 
-    // Set up GLFW window properties
-    // OpenGL version
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // Core profile = not backwards compatibility
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Allow forward compatibility
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3 );
 
-    mainWindow = glfwCreateWindow(width, height, "Test Window", NULL, NULL);
+    mainWindow = SDL_CreateWindow(
+        "Main Window",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+    );
     if (!mainWindow) {
-        printf("GLFW window creation failed!");
-        glfwTerminate();
-        return 1;
+        printf("SDL window creation failed!");
+        SDL_Quit();
+        return -1;
     }
 
-    glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
+    SDL_GL_GetDrawableSize(mainWindow, &bufferWidth, &bufferHeight);
 
     // Set context for GLEW to use
-    glfwMakeContextCurrent(mainWindow);
+    context = SDL_GL_CreateContext(mainWindow);
 
     // Allow modern extension features
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK) {
         printf("GLEW initalization failed!");
-        glfwDestroyWindow(mainWindow);
-        glfwTerminate();
-        return 1;
+        SDL_DestroyWindow(mainWindow);
+        SDL_Quit();
+        return -1;
     }
+
+    // sync with monitor vertical refresh
+    SDL_GL_SetSwapInterval(1);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -67,48 +58,34 @@ int Window::Initialize() {
     // Set up viewport size
     glViewport(0, 0, bufferWidth, bufferHeight);
 
-    // Handle key + mouse input
-    createCallBacks();
-    glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    SDL_SetWindowGrab(mainWindow, SDL_TRUE);
 
-    glfwSetWindowUserPointer(mainWindow, this);
 }
 
-void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode) {
-    Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
-
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-    if (key >= 0 && key < 1024) {
-        if (action == GLFW_PRESS) {
-            theWindow->keys[key] = true;
-        }
-        else if (action == GLFW_RELEASE) {
-            theWindow->keys[key] = false;
-        }
+void Window::handleKeys(SDL_Event event) {
+    switch(event.type) {
+        case SDL_KEYDOWN:
+            keys[event.key.keysym.sym] = true;
+            break;
+        case SDL_KEYUP:
+            keys[event.key.keysym.sym] = false;
+            break;
     }
 }
 
-void Window::handleMouse(GLFWwindow* window, double xPos, double yPos) {
-    Window* theWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+void Window::handleMouse(SDL_Event event) {
 
-    if (theWindow->mouseFirstMoved) {
-        theWindow->lastX = xPos;
-        theWindow->lastY = yPos;
-        theWindow->mouseFirstMoved = false;
+   /* if (mouseFirstMoved) {
+        lastX = xPos;
+        lastY = yPos;
+        mouseFirstMoved = false;
     }
 
-    theWindow->xChange = xPos - theWindow->lastX;
-    theWindow->yChange = theWindow->lastY - yPos;
+    xChange = xPos - lastX;
+    yChange = lastY - yPos;
 
-    theWindow->lastX = xPos;
-    theWindow->lastY = yPos;
-}
-
-void Window::createCallBacks() {
-    glfwSetKeyCallback(mainWindow, handleKeys);
-    glfwSetCursorPosCallback(mainWindow, handleMouse);
+    lastX = xPos;
+    lastY = yPos;*/
 }
 
 GLfloat Window::getXChange() {

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <map>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <GLFW/glfw3.h>
+#include <SDL2/sdl.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 class Camera{
@@ -15,7 +16,7 @@ public:
 		   GLfloat startMoveSpeed,
 		   GLfloat startTurnSpeed);
 
-	void KeyControl(bool* keys, GLfloat deltaTime);
+	void KeyControl(std::map<char, bool> keys, GLfloat deltaTime);
 	void mouseControl(GLfloat xChange, GLfloat yChange);
 
 	glm::vec3 GetCameraPosition();
@@ -33,6 +34,10 @@ private:
 
 	GLfloat yaw;
 	GLfloat pitch;
+    Sint32 xPos;
+    Sint32 yPos;
+    Sint32 xChange;
+    Sint32 yChange;
 
 	GLfloat moveSpeed;
 	GLfloat turnSpeed;

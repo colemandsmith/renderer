@@ -18,26 +18,33 @@ Camera::Camera(glm::vec3 startPosition,
 	turnSpeed = startTurnSpeed;
 }
 
-void Camera::KeyControl(bool* keys, GLfloat deltaTime) {
-	GLfloat velocity = moveSpeed * deltaTime;
-	if (keys[GLFW_KEY_W]) {
-		position += front * velocity;
-	}
-	if (keys[GLFW_KEY_S]) {
-		position -= front * velocity;
-	}
-	if (keys[GLFW_KEY_A]) {
-		position -= right * velocity;
-	}
-	if (keys[GLFW_KEY_D]) {
-		position += right * velocity;
-	}
-	if (keys[GLFW_KEY_SPACE]) {
-		position += up * velocity;
-	}
-	if (keys[GLFW_KEY_LEFT_CONTROL]) {
-		position -= up * velocity;
-	}
+void Camera::KeyControl(std::map<char, bool> keys, GLfloat deltaTime) {
+
+    printf("delta time %f\n", deltaTime);
+
+    printf("move speed %f\n", moveSpeed);
+    GLfloat velocity = moveSpeed * deltaTime;
+    printf("velocity %f\n", velocity);
+    if (keys[SDLK_w]) {
+        printf("front %f %f %f\n", front.x, front.y, front.z);
+        position += front * velocity;
+    }
+    if (keys[SDLK_s]) {
+        position -= front * velocity;
+    }
+    if (keys[SDLK_a]) {
+        position -= right * velocity;
+    }
+    if (keys[SDLK_d]) {
+        position += right * velocity;
+    }
+    if (keys[SDLK_SPACE]) {
+        position += up * velocity;
+    }
+    if (keys[SDLK_LCTRL]) {
+        position -= up * velocity;
+    }
+    printf("position %f %f %f\n", position.x, position.y, position.z);
 }
 
 void Camera::mouseControl(GLfloat xChange, GLfloat yChange) {

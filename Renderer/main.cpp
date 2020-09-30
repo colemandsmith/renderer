@@ -7,7 +7,6 @@
 
 #include <windows.h>
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -26,6 +25,8 @@
 #include "Material.h"
 #include "Model.h"
 #include "Skybox.h"
+
+#undef main
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
@@ -55,7 +56,6 @@ Material shinyMaterial;
 Material dullMaterial;
 
 GLfloat deltaTime = 0.0f;
-GLfloat lastTime = 0.0f;
 
 float catAngle;
 
@@ -69,6 +69,8 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosit
 // Vertex Shader
 static const char* vShader = "Shaders/shader.vert";
 static const char* fShader = "Shaders/shader.frag";
+
+bool shouldQuit = false;
 
 void CreateShaders() {
     Shader* defaultShader = new Shader();
@@ -175,7 +177,7 @@ void CreateSimplePolygons() {
 }
 
 void SetupObjects() {
-    mainWindow = Window(1366, 768);
+    mainWindow = Window(1920, 1080);
     mainWindow.Initialize();
 
     CreateSimplePolygons();
@@ -227,7 +229,7 @@ void SetupObjects() {
         -1.0f, 2.0f, 0.0f,
         0.3f, 0.2f, 0.1f
     );
-    //pointLightCount++;
+    pointLightCount++;
     pointLights[1] = PointLight(
         1024, 1024, 0.1f, 100.0f,
         0.0f, 1.0f, 0.0f,
@@ -235,7 +237,7 @@ void SetupObjects() {
         -4.0f, 3.0f, 0.0f,
         0.3f, 0.2f, 0.1f
     );
-    //pointLightCount++;
+    pointLightCount++;
 
     spotLightCount = 0;
     spotLights[0] = SpotLight(
@@ -247,7 +249,7 @@ void SetupObjects() {
         1.0f, 0.0f, 0.0f,
         20.0f
     );
-    //spotLightCount++;
+    spotLightCount++;
 
     spotLights[1] = SpotLight(
         1024, 1024, 0.1f, 100.0f,
@@ -258,7 +260,7 @@ void SetupObjects() {
         1.0f, 0.0f, 0.0f,
         20.0f
     );
-    //spotLightCount++;
+    spotLightCount++;
 
     std::vector<std::string> skyboxFaces;
     // order is important
@@ -480,6 +482,22 @@ void PerformRenderPasses(glm::mat4 projection) {
     RenderNormalMapModels(projection, camera.CalculateViewMatrix());
 }
 
+void HandleEvents(SDL_Event event) {
+    //printf("%s\n", event.key.keysym.sym);
+    switch (event.type) {
+        case SDL_QUIT:
+            shouldQuit = true;
+            break;
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            mainWindow.handleKeys(event);
+            break;
+        case SDL_MOUSEMOTION:
+            mainWindow.handleMouse(event);
+            break;
+    }
+}
+
 int main() {
     
     SetupObjects();
@@ -487,25 +505,30 @@ int main() {
         glm::radians(60.0f), mainWindow.getBufferWidth()/mainWindow.getBufferHeight(), 0.1f, 100.0f
     );
 
-    // Loop until window closed
-    while (!mainWindow.getShouldClose()) {
-        GLfloat now = glfwGetTime();
-        deltaTime = now - lastTime;
-        lastTime = now;
+    SDL_Event event;
+
+    Uint64 now = SDL_GetPerformanceCounter();
+    Uint64 last = 0;
+
+    unsigned int counter = 0;
+    // Loop until we should quit
+    while (!shouldQuit) {
+        last = now;
+        now = SDL_GetPerformanceCounter();
+        deltaTime = (float)((now - last) / (float)SDL_GetPerformanceFrequency());
 
         // Get and handle user input events
-        glfwPollEvents();
+        while (SDL_PollEvent(&event) != 0) {
+            HandleEvents(event);
+            camera.KeyControl(mainWindow.getKeys(), deltaTime);
+            camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
-        camera.KeyControl(mainWindow.getKeys(), deltaTime);
-        camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-
-        if (mainWindow.getKeys()[GLFW_KEY_L]) {
-            spotLights[0].Toggle();
-            mainWindow.getKeys()[GLFW_KEY_L] = false;
+            if (mainWindow.getKeys()[SDLK_l]) {
+                spotLights[0].Toggle();
+                mainWindow.getKeys()[SDLK_l] = false;
+            }
         }
-
         PerformRenderPasses(projection);
-
         mainWindow.SwapBufffers();
     }
 
