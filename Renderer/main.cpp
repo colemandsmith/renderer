@@ -12,7 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "CommonValues.h";
+#include "CommonValues.h"
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -45,6 +45,7 @@ std::vector<Model*> modelList;
 Model brickModel;
 Model orangeCat;
 Model skull;
+Model donut;
 
 Skybox skybox;
 
@@ -70,6 +71,10 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosit
 static const char* vShader = "Shaders/shader.vert";
 static const char* fShader = "Shaders/shader.frag";
 
+void SetupScene() {
+
+}
+
 void CreateShaders() {
     Shader* defaultShader = new Shader();
     defaultShader->CreateFromFiles(vShader, fShader);
@@ -92,7 +97,7 @@ void CreateShaders() {
 void CalcAverageNormals(unsigned int* indices, unsigned int indexCount, 
                         GLfloat* vertices, unsigned int vertexCount, unsigned int vertexLength,
                         unsigned int normalOffset) {
-    for (size_t i = 0; i < indexCount; i+=3) {
+    for (size_t i = 0; i < indexCount; i += 3) {
         unsigned int index0 = indices[i] * vertexLength;
         unsigned int index1 = indices[i + 1] * vertexLength;
         unsigned int index2 = indices[i + 2] * vertexLength;
@@ -211,6 +216,9 @@ void SetupObjects() {
     orangeCat = Model();
     orangeCat.LoadModel("Models/orange_cat.obj");
 
+    donut = Model();
+    donut.LoadModel("Models/donut.obj");
+
     mainLight = DirectionalLight(
         2048, 2048,
         1.0f, 0.53f, 0.3f,
@@ -227,7 +235,7 @@ void SetupObjects() {
         -1.0f, 2.0f, 0.0f,
         0.3f, 0.2f, 0.1f
     );
-    //pointLightCount++;
+    pointLightCount++;
     pointLights[1] = PointLight(
         1024, 1024, 0.1f, 100.0f,
         0.0f, 1.0f, 0.0f,
@@ -235,7 +243,7 @@ void SetupObjects() {
         -4.0f, 3.0f, 0.0f,
         0.3f, 0.2f, 0.1f
     );
-    //pointLightCount++;
+    pointLightCount++;
 
     spotLightCount = 0;
     spotLights[0] = SpotLight(
@@ -247,7 +255,7 @@ void SetupObjects() {
         1.0f, 0.0f, 0.0f,
         20.0f
     );
-    //spotLightCount++;
+    spotLightCount++;
 
     spotLights[1] = SpotLight(
         1024, 1024, 0.1f, 100.0f,
@@ -258,7 +266,7 @@ void SetupObjects() {
         1.0f, 0.0f, 0.0f,
         20.0f
     );
-    //spotLightCount++;
+    spotLightCount++;
 
     std::vector<std::string> skyboxFaces;
     // order is important
@@ -312,7 +320,7 @@ void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 
     glm::mat4 model(1.0f);
 
-    catAngle += 0.1;
+    catAngle += 0.1f;
     if (catAngle > 360) {
         catAngle = 0.1f;
     }
@@ -354,7 +362,7 @@ void RenderScene() {
 
     meshList[2]->RenderMesh();
 
-    catAngle += 0.1;
+    catAngle += 0.1f;
     if (catAngle > 360) {
         catAngle = 0.1f;
     }
@@ -369,7 +377,6 @@ void RenderScene() {
 
     orangeCat.RenderModel();
 
-
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -377,6 +384,13 @@ void RenderScene() {
     glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
     shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
     skull.RenderModel();
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+    dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+    donut.RenderModel();
 }
 
 void DirectionalShadowMapPass(DirectionalLight* light) {
@@ -483,8 +497,12 @@ void PerformRenderPasses(glm::mat4 projection) {
 int main() {
     
     SetupObjects();
+    printf("objects set up\n");
     glm::mat4 projection = glm::perspective(
-        glm::radians(60.0f), mainWindow.getBufferWidth()/mainWindow.getBufferHeight(), 0.1f, 100.0f
+        glm::radians(60.0f),
+        (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(),
+        0.1f,
+        100.0f
     );
 
     // Loop until window closed

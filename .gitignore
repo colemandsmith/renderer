@@ -60,3 +60,5 @@
 *.tif
 
 *.swp
+
+Renderer/Configs/*

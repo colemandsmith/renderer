@@ -15,4 +15,3 @@ private:
 	GLfloat specularIntensity;
 	GLfloat shininess;
 };
-
