@@ -1,0 +1,9 @@
+# To be normalized
+*.c text=auto eol=lf
+*.h text=auto eol=lf
+*.vert text=auto eol=lf
+*.frag text=auto eol=lf
+*.geom text=auto eol=lf
+
+# Solution file should have windows line endings
+*.sln text=auto eol=crlf
