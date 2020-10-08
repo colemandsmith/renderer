@@ -21,6 +21,7 @@
 #include "Texture.h"
 #include "Light.h"
 #include "DirectionalLight.h"
+#include "RenderObject.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Material.h"
@@ -44,6 +45,7 @@ std::vector<Model*> modelList;
 
 Model brickModel;
 Model orangeCat;
+RenderObject orangeCatRenderObj;
 Model skull;
 Model donut;
 
@@ -216,6 +218,16 @@ void SetupObjects() {
     orangeCat = Model();
     orangeCat.LoadModel("Models/orange_cat.obj");
 
+    /*model = glm::rotate(model, glm::radians(catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -1.0f));
+    model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));*/
+    orangeCatRenderObj = RenderObject(
+        &orangeCat, "orange cat",
+        glm::vec3(-3.0f, 1.0f, -1.0f),
+        glm::vec3(0.05f, 0.05f, 0.05f),
+        -90.0f, 0.0f, 0.0f);
+
     donut = Model();
     donut.LoadModel("Models/donut.obj");
 
@@ -336,7 +348,7 @@ void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
     brickModel.RenderModel();
 }
 
-void RenderScene() {
+void RenderScene(Shader* shader) {
     glm::mat4 model(1.0f);
 
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
@@ -367,15 +379,18 @@ void RenderScene() {
         catAngle = 0.1f;
     }
 
-    model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -1.0f));
-    model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+    dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+    //model = glm::mat4(1.0f);
+    //model = glm::rotate(model, glm::radians(catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    //model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -1.0f));
+    //model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    //model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+    //glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
     dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-    orangeCat.RenderModel();
+    //orangeCat.RenderModel();
+    orangeCatRenderObj.Render(shader);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -405,8 +420,8 @@ void DirectionalShadowMapPass(DirectionalLight* light) {
     directionalShadowShader.SetDirectionalLightTransform(&light->CalculateLightTransform());
 
     directionalShadowShader.Validate();
-    RenderScene();
-
+    RenderScene(&directionalShadowShader);
+    
     // Re-bind default frame buffer once we're done
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -428,7 +443,7 @@ void OmniShadowMapPass(PointLight* light) {
     omniShadowShader.SetLightMatrices(light->CalculateLightTransform());
 
     omniShadowShader.Validate();
-    RenderScene();
+    RenderScene(&omniShadowShader);
 
     // Re-bind default frame buffer once we're done
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -479,7 +494,7 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 
     shaderList[0]->Validate();
 
-    RenderScene();
+    RenderScene(shaderList[0]);
 }
 
 void PerformRenderPasses(glm::mat4 projection) {
