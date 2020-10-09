@@ -17,6 +17,7 @@
 #include "SpotLight.h"
 #include "Material.h"
 #include "Model.h"
+#include "RenderObject.h"
 #include "Skybox.h"
 
 class Scene {
@@ -37,7 +38,7 @@ private:
     int directionalLightCount;
     
     DirectionalLight mainLight;
-    std::vector<Model*> models;
+    std::vector<RenderObject*> RenderObject;
     std::vector<SpotLight*> spotLights;
     std::vector<PointLight*> pointLights;
     friend class SceneLoader;

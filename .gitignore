@@ -62,3 +62,4 @@
 *.swp
 
 Renderer/Configs/*
+*Release/*

@@ -30,9 +30,9 @@ RenderObject::RenderObject(Model* model, std::string name, glm::vec3 position, g
     this->scale = scale;
     this->position = position;
 
-    this->xRotation = 0.0f;
-    this->yRotation = 0.0f;
-    this->zRotation = 0.0f;
+    this->xRotation = xRotation;
+    this->yRotation = yRotation;
+    this->zRotation = zRotation;
 }
 
 void RenderObject::Render(Shader* shader) {

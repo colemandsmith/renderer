@@ -103,13 +103,13 @@ void CalcAverageNormals(unsigned int* indices, unsigned int indexCount,
         unsigned int index0 = indices[i] * vertexLength;
         unsigned int index1 = indices[i + 1] * vertexLength;
         unsigned int index2 = indices[i + 2] * vertexLength;
-        glm::vec3 v1(vertices[index1] - vertices[index0],
-                     vertices[index1 + 1] - vertices[index0 + 1],
-                     vertices[index1 + 2] - vertices[index0 + 2]);
-        glm::vec3 v2(vertices[index2] - vertices[index0],
-                     vertices[index2 + 1] - vertices[index0 + 1],
-                     vertices[index2 + 2] - vertices[index0 + 2]);
-        glm::vec3 normal = glm::normalize(glm::cross(v1, v2));
+        glm::vec3 v1(vertices[index0] - vertices[index1],
+                     vertices[index0 + 1] - vertices[index1 + 1],
+                     vertices[index0 + 2] - vertices[index1 + 2]);
+        glm::vec3 v2(vertices[index0] - vertices[index2],
+                     vertices[index0 + 1] - vertices[index2 + 1],
+                     vertices[index0 + 2] - vertices[index2 + 2]);
+        glm::vec3 normal = glm::normalize(glm::cross(v2, v1));
 
         index0 += normalOffset;
         index1 += normalOffset;
@@ -141,10 +141,10 @@ void CalcAverageNormals(unsigned int* indices, unsigned int indexCount,
 
 void CreateSimplePolygons() {
     unsigned int indices[] = {
-        0, 3, 1,
-        1, 3, 2,
-        2, 3, 0,
-        0, 1, 2
+        2, 1, 0,
+        0, 1, 3,
+        3, 1, 2,
+        2, 0, 3,
     };
     GLfloat vertices[] = {
     //   x       y     z         u     v       nx    ny    nz      tx    ty   tz 
@@ -331,11 +331,6 @@ void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
     shaderList[1]->Validate();
 
     glm::mat4 model(1.0f);
-
-    catAngle += 0.1f;
-    if (catAngle > 360) {
-        catAngle = 0.1f;
-    }
 
     model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
