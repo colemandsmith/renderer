@@ -28,7 +28,7 @@ private:
     void LoadModelFromFile(const std::string fileName, bool withNormalMap);
     void LoadNode(aiNode *node, const aiScene *scene, bool withTangents);
     void LoadMesh(aiMesh *mesh, const aiScene *scene, bool withTangents);
-    void LoadMaterials(const aiScene *scene, bool withNormalMap);
+    void LoadTextures(const aiScene *scene, bool withNormalMap);
 
     std::vector<Mesh*> meshList;
     std::vector<Texture*> textureList;
@@ -36,5 +36,6 @@ private:
     // Maps the mesh to the texture in the texture list
     std::vector<unsigned int> meshToTex;
     bool hasNormalMaps;
+    // Maps the mesh to the normal map texture in the normal map list
     std::vector<unsigned int> meshToNormalMap;
 };

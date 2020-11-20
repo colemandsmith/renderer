@@ -10,7 +10,9 @@ public:
 	Mesh();
 
 	void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
-	void RenderMesh();
+    void SetMaterial(Material* material);
+    
+    void RenderMesh();
 	void ClearMesh();
 
 	~Mesh();
@@ -20,4 +22,3 @@ private:
 	GLuint VAO, VBO, IBO;
 	GLsizei indexCount;
 };
-

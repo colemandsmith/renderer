@@ -98,4 +98,6 @@ void Skybox::DrawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix) {
 }
 
 Skybox::~Skybox() {
+    printf("destructing skybox\n");
+    // delete skyShader;
 }

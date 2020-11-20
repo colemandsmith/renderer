@@ -16,5 +16,5 @@ Light::Light(GLuint shadowWidth, GLuint shadowHeight, GLfloat red, GLfloat green
 }
 
 Light::~Light() {
-
+    // delete shadowMap;
 }

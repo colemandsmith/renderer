@@ -49,6 +49,13 @@ void Model::ClearModel() {
             textureList[i] = nullptr;
         }
     }
+
+    for (size_t i = 0; i < normalMapList.size(); i++) {
+        if (normalMapList[i]) {
+            delete normalMapList[i];
+            normalMapList[i] = nullptr;
+        }
+    }
 }
 
 void Model::LoadModelFromFile(const std::string fileName, bool withNormalMap) {
@@ -68,7 +75,7 @@ void Model::LoadModelFromFile(const std::string fileName, bool withNormalMap) {
 
     LoadNode(scene->mRootNode, scene, withNormalMap);
 
-    LoadMaterials(scene, withNormalMap);
+    LoadTextures(scene, withNormalMap);
 }
 
 void Model::LoadNode(aiNode* node, const aiScene* scene, bool withTangents) {
@@ -125,7 +132,7 @@ void Model::LoadMesh(aiMesh* mesh, const aiScene* scene, bool withTangents) {
     meshToNormalMap.push_back(mesh->mMaterialIndex);
 }
 
-void Model::LoadMaterials(const aiScene* scene, bool withNormalMap) {
+void Model::LoadTextures(const aiScene* scene, bool withNormalMap) {
     textureList.resize(scene->mNumMaterials);
     normalMapList.resize(scene->mNumMaterials);
 
@@ -183,5 +190,5 @@ void Model::LoadMaterials(const aiScene* scene, bool withNormalMap) {
 }
 
 Model::~Model() {
-
+    ClearModel();
 }

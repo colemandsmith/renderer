@@ -11,8 +11,8 @@ public:
 
 	int Initialize();
 
-	GLfloat getBufferWidth() { return bufferWidth; };
-	GLfloat getBufferHeight() { return bufferHeight; };
+    GLint getBufferWidth() { return bufferWidth; };
+    GLint getBufferHeight() { return bufferHeight; };
 
 	bool getShouldClose() { return glfwWindowShouldClose(mainWindow); }
 
