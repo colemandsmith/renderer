@@ -161,7 +161,7 @@ void CreateSimplePolygons() {
        1, 2, 3,
     };
 
-    GLfloat floorVertices[] = {
+    GLfloat floorVertices[] = { 
         -10.0f, 0.0f, -10.f,   0.0f, 0.0f,     0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
         10.0f, 0.0f, -10.f,    10.0f, 0.0f,    0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
         -10.f, 0.0f, 10.0f,    0.0f, 10.0f,    0.0f, -1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
@@ -316,7 +316,8 @@ void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
     // first three texture buffers already in use, so start from unit 4
     shaderList[1]->SetPointLights(pointLights, pointLightCount, 4, 1);
     shaderList[1]->SetSpotLights(spotLights, spotLightCount, 4 + pointLightCount, pointLightCount);
-    shaderList[1]->SetDirectionalLightTransform(&mainLight.CalculateLightTransform());
+    glm::mat4 lightTransform = mainLight.CalculateLightTransform();
+    shaderList[1]->SetDirectionalLightTransform(&lightTransform);
 
     mainLight.GetShadowMap()->Read(GL_TEXTURE3);
     shaderList[1]->SetTexture(1);
@@ -412,7 +413,8 @@ void DirectionalShadowMapPass(DirectionalLight* light) {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     uniformModel = directionalShadowShader.GetModelLocation();
-    directionalShadowShader.SetDirectionalLightTransform(&light->CalculateLightTransform());
+    glm::mat4 lightTransform = light->CalculateLightTransform();
+    directionalShadowShader.SetDirectionalLightTransform(&lightTransform);
 
     directionalShadowShader.Validate();
     RenderScene(&directionalShadowShader);
@@ -475,7 +477,9 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
     // first two texture buffers already in use, so start from unit 3
     shaderList[0]->SetPointLights(pointLights, pointLightCount, 3, 0);
     shaderList[0]->SetSpotLights(spotLights, spotLightCount, 3 + pointLightCount, pointLightCount);
-    shaderList[0]->SetDirectionalLightTransform(&mainLight.CalculateLightTransform());
+
+    glm::mat4 lightTransform = mainLight.CalculateLightTransform();
+    shaderList[0]->SetDirectionalLightTransform(&lightTransform);
 
     // Bind to TEXTURE1 since TEXTURE0 is being used by the texture in the main frag shader
     mainLight.GetShadowMap()->Read(GL_TEXTURE2);

@@ -6,8 +6,7 @@ Scene::Scene() {
 }
 
 bool Scene::LoadFromConfig(const std::string fileName) {
-    
-
+    return NULL;
 }
 
 void Scene::RenderScene() {
