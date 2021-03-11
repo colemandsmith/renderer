@@ -1,6 +1,8 @@
 # renderer
 C++ OpenGL renderer
 
+![Rendered image of a skull, a cat, and a brick floating above a dirt floor](DocImages/renderer.png)
+
 As it stands now, this is undergoing active development as a Visual Studio
 project. I may attempt to support linux builds in the future.
 
