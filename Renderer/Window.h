@@ -13,6 +13,7 @@ public:
 
     GLint getBufferWidth() { return bufferWidth; };
     GLint getBufferHeight() { return bufferHeight; };
+    static int getFrameCount() { return frameCount; }
 
 	bool getShouldClose() { return glfwWindowShouldClose(mainWindow); }
 
@@ -20,7 +21,7 @@ public:
 	GLfloat getXChange();
 	GLfloat getYChange();
 
-	void SwapBufffers() { glfwSwapBuffers(mainWindow); }
+    void SwapBufffers() { Window::frameCount++;  glfwSwapBuffers(mainWindow); }
 
 	~Window();
 
@@ -29,6 +30,7 @@ private:
 
 	GLint width, height;
 	GLint bufferHeight, bufferWidth;
+    static int frameCount;
 
 	bool keys[1024];
 

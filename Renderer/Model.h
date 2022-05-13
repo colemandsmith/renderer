@@ -13,8 +13,11 @@
 class Model {
 public:
     Model();
-    /** Constructor to read in a simple shame with a single mesh and single texture */
+    /** Constructors to read in a simple shape with a single mesh, a single texture,
+      * and optionally a normal map 
+      */
     Model(Mesh* mesh, Texture* texture);
+    Model(Mesh* mesh, Texture* texture, Texture* normalMap);
 
     void LoadModel(const std::string fileName);
     void LoadModelWithNormalMap(const std::string fileName);

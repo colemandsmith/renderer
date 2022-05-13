@@ -61,5 +61,5 @@ void RenderObject::Render(Shader* shader) {
 }
 
 RenderObject::~RenderObject() {
-    //delete model;
+    delete model;
 }

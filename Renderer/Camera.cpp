@@ -1,6 +1,22 @@
 #include "Camera.h"
 
-Camera::Camera() {}
+Camera::Camera() {
+    position = glm::vec3{};
+    worldUp = glm::vec3{};
+    yaw = 0.0f;
+    pitch = 0.0f;
+    front = glm::vec3(0.0f, 0.0f, -1.0f);
+
+    moveSpeed = 1.0f;
+    turnSpeed = 1.0f;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front = glm::normalize(front);
+
+    right = glm::normalize(glm::cross(front, worldUp));
+    up = glm::normalize(glm::cross(right, front));
+}
 
 Camera::Camera(glm::vec3 startPosition,
 			   glm::vec3 startUp, 
@@ -16,6 +32,13 @@ Camera::Camera(glm::vec3 startPosition,
 
 	moveSpeed = startMoveSpeed;
 	turnSpeed = startTurnSpeed;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front = glm::normalize(front);
+
+    right = glm::normalize(glm::cross(front, worldUp));
+    up = glm::normalize(glm::cross(right, front));
 }
 
 void Camera::KeyControl(bool* keys, GLfloat deltaTime) {
@@ -45,6 +68,7 @@ void Camera::mouseControl(GLfloat xChange, GLfloat yChange) {
 	yChange *= turnSpeed;
 
 	yaw += xChange;
+    printf("YAW %f\n", yaw);
 	pitch += yChange;
 
 	if (pitch > 89.0f) {

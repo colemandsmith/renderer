@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include <vector>
 
 #include <windows.h>
@@ -45,7 +46,7 @@ std::vector<Model*> modelList;
 
 Model brickModel;
 Model orangeCat;
-RenderObject orangeCatRenderObj;
+RenderObject* orangeCatRenderObj;
 Model skull;
 Model donut;
 
@@ -213,7 +214,7 @@ void SetupObjects() {
     brickModel.LoadModelWithNormalMap("Models/brick01a.obj");
 
     skull = Model();
-    skull.LoadModel("Models/SkullV.obj");
+    skull.LoadModel("Models/skull.obj");
 
     orangeCat = Model();
     orangeCat.LoadModel("Models/orange_cat.obj");
@@ -222,14 +223,14 @@ void SetupObjects() {
     model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -1.0f));
     model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));*/
-    orangeCatRenderObj = RenderObject(
+    orangeCatRenderObj = new RenderObject(
         &orangeCat, "orange cat",
         glm::vec3(-3.0f, 1.0f, -1.0f),
         glm::vec3(0.05f, 0.05f, 0.05f),
         -90.0f, 0.0f, 0.0f);
 
-    donut = Model();
-    donut.LoadModel("Models/donut.obj");
+    //donut = Model();
+    //donut.LoadModel("Models/donut.obj");
 
     mainLight = DirectionalLight(
         2048, 2048,
@@ -282,12 +283,12 @@ void SetupObjects() {
 
     std::vector<std::string> skyboxFaces;
     // order is important
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
+    skyboxFaces.push_back("Textures/Skybox/cartoon_twilight_right.png");
+    skyboxFaces.push_back("Textures/Skybox/cartoon_twilight_left.png");
+    skyboxFaces.push_back("Textures/Skybox/cartoon_twilight_up.png");
+    skyboxFaces.push_back("Textures/Skybox/cartoon_twilight_down.png");
+    skyboxFaces.push_back("Textures/Skybox/cartoon_twilight_back.png");
+    skyboxFaces.push_back("Textures/Skybox/cartoon_twilight_front.png");
 
     skybox = Skybox(skyboxFaces);
 }
@@ -347,20 +348,20 @@ void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 void RenderScene(Shader* shader) {
     glm::mat4 model(1.0f);
 
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
-    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-    brickTexture.UseTexture();
-    shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+    //model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
+    //glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+    //brickTexture.UseTexture();
+    //shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-    meshList[0]->RenderMesh();
+    //meshList[0]->RenderMesh();
 
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
-    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-    dirtTexture.UseTexture();
-    dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+    //model = glm::mat4(1.0f);
+    //model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
+    //glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+    //dirtTexture.UseTexture();
+    //dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-    meshList[1]->RenderMesh();
+    //meshList[1]->RenderMesh();
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
@@ -386,7 +387,7 @@ void RenderScene(Shader* shader) {
     dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
     //orangeCat.RenderModel();
-    orangeCatRenderObj.Render(shader);
+    orangeCatRenderObj->Render(shader);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -396,12 +397,12 @@ void RenderScene(Shader* shader) {
     shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
     skull.RenderModel();
 
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
-    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-    dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-    donut.RenderModel();
+    //model = glm::mat4(1.0f);
+    //model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+    //model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+    //glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+    //dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+    //donut.RenderModel();
 }
 
 void DirectionalShadowMapPass(DirectionalLight* light) {
@@ -519,8 +520,21 @@ int main() {
         100.0f
     );
 
+    double timeframe = 5.0;
+    double frames = 0;
+    time_t prev;
+    time(&prev);
+    time_t current;
     // Loop until window closed
     while (!mainWindow.getShouldClose()) {
+        time(&current);
+        double diff = difftime(current, prev);
+        if (diff >= timeframe) {
+            printf("avg fps last %f seconds: %f\n", timeframe, frames / diff);
+            frames = 0;
+            prev = current;
+        }
+
         GLfloat now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
@@ -539,6 +553,7 @@ int main() {
         PerformRenderPasses(projection);
 
         mainWindow.SwapBufffers();
+        frames++;
     }
 
     return 0;

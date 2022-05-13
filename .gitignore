@@ -63,3 +63,5 @@
 
 Renderer/Configs/*
 *Release/*
+Renderer/Models/*
+Renderer/Textures/*

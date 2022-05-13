@@ -1,5 +1,7 @@
 #include "Window.h"
 
+int Window::frameCount = 0;
+
 Window::Window() {
 	width = 1600;
 	height = 1200;
@@ -9,6 +11,11 @@ Window::Window() {
     }
     xChange = 0.0f;
     yChange = 0.0f;
+    lastX = 0.0f;
+    lastY = 0.0f;
+    bufferWidth = 0;
+    bufferHeight = 0;
+    mouseFirstMoved = false;
 }
 
 Window::Window(GLint windowWidth, GLint windowHeight) {
@@ -20,6 +27,11 @@ Window::Window(GLint windowWidth, GLint windowHeight) {
     }
     xChange = 0.0f;
     yChange = 0.0f;
+    lastX = 0.0f;
+    lastY = 0.0f;
+    bufferWidth = 0;
+    bufferHeight = 0;
+    mouseFirstMoved = false;
 }
 
 int Window::Initialize() {

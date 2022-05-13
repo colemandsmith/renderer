@@ -10,6 +10,15 @@ Model::Model(Mesh* mesh, Texture* texture) {
     meshToTex.push_back(0);
 }
 
+
+Model::Model(Mesh* mesh, Texture* texture, Texture* normalMap) {
+    meshList.push_back(mesh);
+    textureList.push_back(texture);
+    normalMapList.push_back(normalMap);
+    meshToTex.push_back(0);
+    meshToNormalMap.push_back(0);
+}
+
 void Model::LoadModel(const std::string fileName) {
     LoadModelFromFile(fileName, false);
 }
@@ -32,29 +41,6 @@ void Model::RenderModel() {
         }
 
         meshList[i]->RenderMesh();
-    }
-}
-
-void Model::ClearModel() {
-    for (size_t i = 0; i < meshList.size(); i++) {
-        if (meshList[i]) {
-            delete meshList[i];
-            meshList[i] = nullptr;
-        }
-    }
-
-    for (size_t i = 0; i < textureList.size(); i++) {
-        if (textureList[i]) {
-            delete textureList[i];
-            textureList[i] = nullptr;
-        }
-    }
-
-    for (size_t i = 0; i < normalMapList.size(); i++) {
-        if (normalMapList[i]) {
-            delete normalMapList[i];
-            normalMapList[i] = nullptr;
-        }
     }
 }
 
@@ -144,7 +130,7 @@ void Model::LoadTextures(const aiScene* scene, bool withNormalMap) {
         if (material->GetTextureCount(aiTextureType_DIFFUSE)) {
             aiString path;
             if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS) {
-                int idx = std::string(path.data).rfind("\\");
+                size_t idx = std::string(path.data).rfind("\\");
                 std::string fname = std::string(path.data).substr(idx + 1);
 
                 std::string texPath = std::string("Textures/") + fname;
@@ -165,7 +151,7 @@ void Model::LoadTextures(const aiScene* scene, bool withNormalMap) {
                 // Ignore everything except the last part of the path
                 // to account for a model creator's local filepaths having
                 // been saved in the model
-                int idx = std::string(path.data).rfind("\\");
+                size_t idx = std::string(path.data).rfind("\\");
                 std::string fname = std::string(path.data).substr(idx + 1);
 
                 std::string texPath = std::string("Textures/") + fname;
@@ -185,6 +171,29 @@ void Model::LoadTextures(const aiScene* scene, bool withNormalMap) {
         if (!textureList[i]) {
             textureList[i] = new Texture("Textures/plain.png");
             textureList[i]->LoadTextureA();
+        }
+    }
+}
+
+void Model::ClearModel() {
+    for (size_t i = 0; i < meshList.size(); i++) {
+        if (meshList[i]) {
+            delete meshList[i];
+            meshList[i] = nullptr;
+        }
+    }
+
+    for (size_t i = 0; i < textureList.size(); i++) {
+        if (textureList[i]) {
+            delete textureList[i];
+            textureList[i] = nullptr;
+        }
+    }
+
+    for (size_t i = 0; i < normalMapList.size(); i++) {
+        if (normalMapList[i]) {
+            delete normalMapList[i];
+            normalMapList[i] = nullptr;
         }
     }
 }
