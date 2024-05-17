@@ -73,6 +73,7 @@ int Window::Initialize() {
     glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetWindowUserPointer(mainWindow, this);
+    return 1;
 }
 
 void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode) {

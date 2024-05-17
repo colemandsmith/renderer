@@ -38,7 +38,7 @@ private:
     int directionalLightCount;
     
     DirectionalLight mainLight;
-    std::vector<RenderObject*> RenderObject;
+    std::vector<RenderObject*> RenderObj;
     std::vector<SpotLight*> spotLights;
     std::vector<PointLight*> pointLights;
     friend class SceneLoader;

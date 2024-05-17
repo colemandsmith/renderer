@@ -60,6 +60,12 @@
 *.tif
 
 *.swp
+.vscode/*
 
 Renderer/Configs/*
 *Release/*
+build/*
+Debug/*
+Renderer/Models/*
+Renderer/Textures/*
+compile_commands.json
