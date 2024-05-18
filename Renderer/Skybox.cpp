@@ -4,6 +4,10 @@ Skybox::Skybox() {
 
 }
 
+Skybox::Skybox(std::string skyboxLocation, Skybox::TextureType skyboxTextureType) {
+  
+}
+
 Skybox::Skybox(std::vector<std::string> faceLocations) {
     // Shader Location
     skyShader = new Shader();

@@ -1,28 +1,32 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <GL/glew.h>
 
+#include "CommonValues.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "CommonValues.h"
 
 class Skybox {
 public:
-    Skybox();
+  Skybox();
 
-    Skybox(std::vector<std::string> faceLocations);
-    void DrawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+  enum TextureType {
+    CUBEMAP
+  };
 
-    ~Skybox();
+  Skybox(std::string skyboxLocation, Skybox::TextureType skyboxTextureType = Skybox::TextureType::CUBEMAP);
+  Skybox(std::vector<std::string> faceLocations);
+  void DrawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+
+  ~Skybox();
 
 private:
-    Mesh* skyMesh;
-    Shader* skyShader;
+  Mesh *skyMesh;
+  Shader *skyShader;
 
-    GLuint textureId;
-    GLuint uniformProjection, uniformView;
+  GLuint textureId;
+  GLuint uniformProjection, uniformView;
 };
-
