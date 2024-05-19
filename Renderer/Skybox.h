@@ -14,19 +14,24 @@ public:
   Skybox();
 
   enum TextureType {
-    CUBEMAP
+    EQUIRECTANGULAR,
+    CUBEMAP,
+    SEPARATE_IMAGES
   };
 
-  Skybox(std::string skyboxLocation, Skybox::TextureType skyboxTextureType = Skybox::TextureType::CUBEMAP);
+  Skybox(std::string skyboxLocation, Skybox::TextureType inputTextureType = Skybox::TextureType::EQUIRECTANGULAR);
   Skybox(std::vector<std::string> faceLocations);
   void DrawSkybox(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 
   ~Skybox();
 
 private:
+  void CreateMesh();
+  void ConvertEquirectToCubemap(GLuint equirectTextureId);
   Mesh *skyMesh;
   Shader *skyShader;
 
   GLuint textureId;
   GLuint uniformProjection, uniformView;
+  Skybox::TextureType skyboxTextureType;
 };

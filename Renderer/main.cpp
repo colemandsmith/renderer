@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <vector>
+#include <wordexp.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -38,7 +39,6 @@ Shader omniShadowShader;
 
 Texture brickTexture;
 Texture dirtTexture;
-Texture plainTexture;
 
 std::vector<Model*> modelList;
 
@@ -46,7 +46,6 @@ Model brickModel;
 Model orangeCat;
 RenderObject orangeCatRenderObj;
 Model skull;
-Model donut;
 
 Skybox skybox;
 
@@ -202,9 +201,6 @@ void SetupObjects() {
     dirtTexture = Texture("Textures/dirt.png");
     dirtTexture.LoadTextureA();
 
-    plainTexture = Texture("Textures/plain.png");
-    plainTexture.LoadTextureA();
-
     shinyMaterial = Material(4.0f, 256);
     dullMaterial = Material(0.3f, 0);
 
@@ -212,7 +208,7 @@ void SetupObjects() {
     brickModel.LoadModelWithNormalMap("Models/brick01a.obj");
 
     skull = Model();
-    skull.LoadModel("Models/SkullV.obj");
+    skull.LoadModel("Models/skull.obj");
 
     orangeCat = Model();
     orangeCat.LoadModel("Models/orange_cat.obj");
@@ -227,8 +223,6 @@ void SetupObjects() {
         glm::vec3(0.05f, 0.05f, 0.05f),
         -90.0f, 0.0f, 0.0f);
 
-    donut = Model();
-    donut.LoadModel("Models/donut.obj");
 
     mainLight = DirectionalLight(
         2048, 2048,
@@ -279,16 +273,17 @@ void SetupObjects() {
     );
     spotLightCount++;
 
-    std::vector<std::string> skyboxFaces;
+    //std::vector<std::string> skyboxFaces;
     // order is important
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
-    skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
+    // skyboxFaces.push_back("Textures/Skybox/cupertin-lake_rt.tga");
+    // skyboxFaces.push_back("Textures/Skybox/cupertin-lake_lf.tga");
+    // skyboxFaces.push_back("Textures/Skybox/cupertin-lake_up.tga");
+    // skyboxFaces.push_back("Textures/Skybox/cupertin-lake_dn.tga");
+    // skyboxFaces.push_back("Textures/Skybox/cupertin-lake_bk.tga");
+    // skyboxFaces.push_back("Textures/Skybox/cupertin-lake_ft.tga");
 
-    skybox = Skybox(skyboxFaces);
+    // skybox = Skybox(skyboxFaces);
+    skybox = Skybox("/home/cole/scratch/textures/skybox.hdr", Skybox::TextureType::EQUIRECTANGULAR);
 }
 
 void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
@@ -400,7 +395,6 @@ void RenderScene(Shader* shader) {
     model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
     glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
     dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-    donut.RenderModel();
 }
 
 void DirectionalShadowMapPass(DirectionalLight* light) {

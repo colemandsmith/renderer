@@ -50,6 +50,7 @@ public:
     void SetDirectionalShadowMap(GLuint dShadowMap);
     void SetDirectionalLightTransform(glm::mat4* lTransform);
     void SetLightMatrices(std::vector<glm::mat4> lightMatrices);
+    void SetInt(const char* name, int value);
 
 	void UseShader();
 	void ClearShader();

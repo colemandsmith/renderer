@@ -67,7 +67,7 @@ void Model::LoadModelFromFile(const std::string fileName, bool withNormalMap) {
     else {
         flags |= aiProcess_GenSmoothNormals;
     }
-    const aiScene* scene = importer.ReadFile(fileName, flags);
+    const aiScene* scene = importer.ReadFile(fileName.c_str(), flags);
     if (!scene) {
         printf("Model (%s) failed to load: %s\n", fileName.c_str(), importer.GetErrorString());
         return;
