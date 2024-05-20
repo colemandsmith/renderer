@@ -1,14 +1,14 @@
 arch_install() {
-  sudo pacman -Su assimp glfw glew
+  sudo pacman -Su assimp glfw glew cmake
 }
 
 manjaro_install() {
-  pamac install assimp glfw glew
+  pamac install cmake assimp glfw glew
 }
 
 apt_install() {
   apt update
-  apt install libassimp-dev libglfw3 libglfw3-dev libglew-dev
+  apt install cmake libassimp-dev libglfw3 libglfw3-dev libglew-dev
 }
 
 
