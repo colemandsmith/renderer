@@ -45,6 +45,7 @@ std::vector<Model*> modelList;
 Model brickModel;
 Model orangeCat;
 RenderObject orangeCatRenderObj;
+RenderObject skullRenderObj;
 Model skull;
 Model donut;
 
@@ -71,10 +72,6 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosit
 // Vertex Shader
 static const char* vShader = "Shaders/shader.vert";
 static const char* fShader = "Shaders/shader.frag";
-
-void SetupScene() {
-
-}
 
 void CreateShaders() {
     Shader* defaultShader = new Shader();
@@ -212,17 +209,20 @@ void SetupObjects() {
     brickModel.LoadModelWithNormalMap("Models/brick01a.obj");
 
     skull = Model();
-    skull.LoadModel("Models/SkullV.obj");
+    skull.LoadModel("Models/skull.obj");
+
+    skullRenderObj = RenderObject(
+        &skull, &shinyMaterial, "skull",
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.05f, 0.05f, 0.05f),
+        -90.f, 0.0f, 0.0f
+    );
 
     orangeCat = Model();
     orangeCat.LoadModel("Models/orange_cat.obj");
 
-    /*model = glm::rotate(model, glm::radians(catAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -1.0f));
-    model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));*/
     orangeCatRenderObj = RenderObject(
-        &orangeCat, "orange cat",
+        &orangeCat, nullptr, "orange cat",
         glm::vec3(-3.0f, 1.0f, -1.0f),
         glm::vec3(0.05f, 0.05f, 0.05f),
         -90.0f, 0.0f, 0.0f);
@@ -392,8 +392,7 @@ void RenderScene(Shader* shader) {
     model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
     glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-    shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
-    skull.RenderModel();
+    skullRenderObj.Render(shader);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
@@ -510,7 +509,6 @@ void PerformRenderPasses(glm::mat4 projection) {
 int main() {
     
     SetupObjects();
-    printf("objects set up\n");
     glm::mat4 projection = glm::perspective(
         glm::radians(60.0f),
         (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(),

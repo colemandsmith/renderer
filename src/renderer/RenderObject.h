@@ -12,8 +12,9 @@
 class RenderObject {
 public:
     RenderObject();
-    RenderObject(Model* model, std::string name);
-    RenderObject(Model* model, std::string name, glm::vec3 position, glm::vec3 scale,
+    RenderObject(Model* model, Material* material, std::string name);
+    RenderObject(Model* model, Material* material, std::string name,
+                 glm::vec3 position, glm::vec3 scale,
                  GLfloat xRotation, GLfloat yRotation, GLfloat zRotation);
 
     void Render(Shader* shader);
@@ -22,6 +23,7 @@ public:
 private:
     std::string name;
     Model* model;
+    Material* material;
 
     glm::vec3 position;
     glm::vec3 scale;

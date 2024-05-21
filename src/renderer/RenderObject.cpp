@@ -11,9 +11,10 @@ RenderObject::RenderObject() {
     zRotation = 0.0f;
 }
 
-RenderObject::RenderObject(Model* model, std::string name) {
+RenderObject::RenderObject(Model* model, Material* material, std::string name) {
     this->name = name;
     this->model = model;
+    this->material = material;
 
     scale = glm::vec3(1.0, 1.0, 1.0);
     position = glm::vec3(0.0, 0.0, 0.0);
@@ -22,10 +23,12 @@ RenderObject::RenderObject(Model* model, std::string name) {
     zRotation = 0.0f;
 }
 
-RenderObject::RenderObject(Model* model, std::string name, glm::vec3 position, glm::vec3 scale,
+RenderObject::RenderObject(Model* model, Material* material, std::string name,
+                           glm::vec3 position, glm::vec3 scale,
                            GLfloat xRotation, GLfloat yRotation, GLfloat zRotation) {
     this->name = name;
     this->model = model;
+    this->material = material;
 
     this->scale = scale;
     this->position = position;
@@ -36,6 +39,9 @@ RenderObject::RenderObject(Model* model, std::string name, glm::vec3 position, g
 }
 
 void RenderObject::Render(Shader* shader) {
+    if (model == nullptr) {
+        return;
+    }
     GLuint uniformModel = shader->GetModelLocation();
     GLuint uniformProjection = shader->GetProjectionLocation();
     GLuint uniformView = shader->GetViewLocation();
@@ -57,6 +63,9 @@ void RenderObject::Render(Shader* shader) {
     modelMatrix = glm::scale(modelMatrix, scale);
 
     glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    if (material) {
+        material->UseMaterial(shader->GetSpecularIntensityLocation(), shader->GetShininessLocation());
+    }
     model->RenderModel();
 }
 
