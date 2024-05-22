@@ -76,25 +76,25 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 set(SOURCES
-    Renderer/Camera.cpp
-    Renderer/DirectionalLight.cpp
-    Renderer/GameObject.cpp
-    Renderer/Light.cpp
-    Renderer/main.cpp
-    Renderer/Material.cpp
-    Renderer/Mesh.cpp
-    Renderer/Model.cpp
-    Renderer/OmniShadowMap.cpp
-    Renderer/PointLight.cpp
-    Renderer/RenderObject.cpp
-    Renderer/Scene.cpp
-    Renderer/Shader.cpp
-    Renderer/ShaderManager.cpp
-    Renderer/ShadowMap.cpp
-    Renderer/Skybox.cpp
-    Renderer/SpotLight.cpp
-    Renderer/Texture.cpp
-    Renderer/Window.cpp
+    src/renderer/Camera.cpp
+    src/renderer/DirectionalLight.cpp
+    src/renderer/GameObject.cpp
+    src/renderer/Light.cpp
+    src/renderer/main.cpp
+    src/renderer/Material.cpp
+    src/renderer/Mesh.cpp
+    src/renderer/Model.cpp
+    src/renderer/OmniShadowMap.cpp
+    src/renderer/PointLight.cpp
+    src/renderer/RenderObject.cpp
+    src/renderer/Scene.cpp
+    src/renderer/Shader.cpp
+    src/renderer/ShaderManager.cpp
+    src/renderer/ShadowMap.cpp
+    src/renderer/Skybox.cpp
+    src/renderer/SpotLight.cpp
+    src/renderer/Texture.cpp
+    src/renderer/Window.cpp
 )
 list(APPEND INCLUDE_DIRS ${EXT_INCLUDE_DIRS})
 
