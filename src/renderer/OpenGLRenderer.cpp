@@ -10,21 +10,4 @@ void OpenGLRenderer::PerformRenderPasses(
         const SpotLight (&spotLights)[MAX_SPOT_LIGHTS],
         const int spotLightCount
     ) {
-    DirectionalShadowMapPass(mainLight);
-    for (size_t i = 0; i < pointLightCount; i++) {
-        OmniShadowMapPass(pointLights[i]);
     }
-    for (size_t i = 0; i < spotLightCount; i++) {
-        OmniShadowMapPass(spotLights[i]);
-    }
-    RenderPass(projection, camera.CalculateViewMatrix());
-    RenderNormalMapModels(projection, camera.CalculateViewMatrix());
-}
-
-void OpenGLRenderer::RenderScene() {
-
-}
-
-void OpenGlRenderer::DirectionalShadowMapPass() {
-
-}

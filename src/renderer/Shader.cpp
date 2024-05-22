@@ -6,8 +6,8 @@ Shader::Shader() {
 	uniformModel = 0;
 	uniformProjection = 0;
 
-    pointLightCount = 0;
-    spotLightCount = 0;
+  pointLightCount = 0;
+  spotLightCount = 0;
 }
 
 void Shader::CreateFromString(const char* vertexCode, const char* fragmentCode) {
