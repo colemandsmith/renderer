@@ -8,15 +8,16 @@ class Mesh {
 public:
     Mesh();
 
-    void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
-    
-    void RenderMesh();
-    void ClearMesh();
+    void CreateMesh(float *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
 
+    const float* GetVertices(int &out_numVertices);
+    const unsigned int* GetIndices(int &out_numIndices);
+    
     ~Mesh();
 
 private:
-    Material* material;
-    GLuint VAO, VBO, IBO;
-    GLsizei indexCount;
+    float *vertices;
+    unsigned int *indices;
+    unsigned int numVertices;
+    unsigned int numIndices;
 };

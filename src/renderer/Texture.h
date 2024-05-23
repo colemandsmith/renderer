@@ -4,20 +4,30 @@
 
 #include "CommonValues.h"
 
+
+enum TextureColorSpace {
+    RGB,
+    RGBA
+};
+
+
 class Texture {
 public:
 	Texture();
 	Texture(const char* fileLoc);
 
-	bool LoadTexture();
-    bool LoadTextureA();
+	const bool LoadTexture();
+    const bool LoadTextureA();
 	void UseTexture();
     void UseTexture(GLenum textureUnit);
 	void ClearTexture();
+    inline const TextureColorSpace GetColorSpace() { return colorSpace; }
 	~Texture();
 
 private:
 	GLuint textureId;
 	int width, height, bitDepth;
+    unsigned char* textureData;
 	const char* fileLocation;
+    TextureColorSpace colorSpace;
 };

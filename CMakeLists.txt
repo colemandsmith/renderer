@@ -78,20 +78,19 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SOURCES
     src/renderer/Camera.cpp
     src/renderer/DirectionalLight.cpp
-    src/renderer/GameObject.cpp
     src/renderer/Light.cpp
-    src/renderer/main.cpp
+    src/renderer/main_renderer.cpp
     src/renderer/Material.cpp
     src/renderer/Mesh.cpp
-    src/renderer/Model.cpp
-    src/renderer/OmniShadowMap.cpp
+    # src/renderer/Model.cpp
+    # src/renderer/OmniShadowMap.cpp
     src/renderer/PointLight.cpp
     src/renderer/RenderObject.cpp
     src/renderer/Scene.cpp
     src/renderer/Shader.cpp
     src/renderer/ShaderManager.cpp
     src/renderer/ShadowMap.cpp
-    src/renderer/Skybox.cpp
+    # src/renderer/Skybox.cpp
     src/renderer/SpotLight.cpp
     src/renderer/Texture.cpp
     src/renderer/Window.cpp

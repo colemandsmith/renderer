@@ -11,9 +11,9 @@ class Light {
 public:
 	Light();
 	Light(
-        GLuint shadowWidth, GLuint shadowHeight,
-        GLfloat red, GLfloat green, GLfloat blue,
-        GLfloat amIntensity, GLfloat dIntensity
+        unsigned int shadowWidth, unsigned int shadowHeight,
+        float red, float green, float blue,
+        float amIntensity, float dIntensity
     );
 
     ShadowMap* GetShadowMap() { return shadowMap; };
@@ -22,8 +22,8 @@ public:
 
 protected:
 	glm::vec3 color;
-	GLfloat ambientIntensity;
-	GLfloat diffuseIntensity;
+	float ambientIntensity;
+	float diffuseIntensity;
 
     glm::mat4 lightProj;
 

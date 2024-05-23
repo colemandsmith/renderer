@@ -7,24 +7,24 @@ SpotLight::SpotLight() : PointLight() {
     isOn = true;
 }
 
-SpotLight::SpotLight(GLuint shadowWidth, GLuint shadowHeight,
-                     GLfloat near, GLfloat far,
-                     GLfloat red, GLfloat green, GLfloat blue,
-                     GLfloat amIntensity, GLfloat dIntensity,
-                     GLfloat xPos, GLfloat yPos, GLfloat zPos, 
-                     GLfloat xDir, GLfloat yDir, GLfloat zDir,
-                     GLfloat con, GLfloat lin, GLfloat exp,
-                     GLfloat edge) : PointLight(shadowWidth, shadowHeight, near, far, red, green, blue, amIntensity, dIntensity, xPos, yPos, zPos, con, lin, exp) {
+SpotLight::SpotLight(unsigned int shadowWidth, unsigned int shadowHeight,
+                     float near, float far,
+                     float red, float green, float blue,
+                     float amIntensity, float dIntensity,
+                     float xPos, float yPos, float zPos, 
+                     float xDir, float yDir, float zDir,
+                     float con, float lin, float exp,
+                     float edge) : PointLight(shadowWidth, shadowHeight, near, far, red, green, blue, amIntensity, dIntensity, xPos, yPos, zPos, con, lin, exp) {
     direction = glm::normalize(glm::vec3(xDir, yDir, zDir));
     this->edge = edge;
     processedEdge = cosf(glm::radians(edge));
     isOn = true;
 }
 
-void SpotLight::UseLight(GLuint ambientIntensityLocation, GLuint ambientColorLocation,
-                         GLuint diffuseIntensityLocation, GLuint positionLocation, GLuint directionLocation,
-                         GLuint constantLocation, GLuint linearLocation, GLuint exponentLocation,
-                         GLuint edgeLocation) {
+void SpotLight::UseLight(unsigned int ambientIntensityLocation, unsigned int ambientColorLocation,
+                         unsigned int diffuseIntensityLocation, unsigned int positionLocation, unsigned int directionLocation,
+                         unsigned int constantLocation, unsigned int linearLocation, unsigned int exponentLocation,
+                         unsigned int edgeLocation) {
     glUniform3f(ambientColorLocation, color.x, color.y, color.z);
     if (isOn) {
 

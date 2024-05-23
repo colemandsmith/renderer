@@ -4,28 +4,29 @@ class SpotLight : public PointLight {
 public:
     SpotLight();
 
-    SpotLight(GLuint shadowWidth, GLuint shadowHeight,
-              GLfloat near, GLfloat far,
-              GLfloat red, GLfloat green, GLfloat blue,
-              GLfloat amIntensity, GLfloat dIntensity,
-              GLfloat xPos, GLfloat yPos, GLfloat zPos,
-              GLfloat xDir, GLfloat yDir, GLfloat zDir,
-              GLfloat con, GLfloat lin, GLfloat exp,
-              GLfloat edge);
+    SpotLight(unsigned int shadowWidth, unsigned int shadowHeight,
+              float near, float far,
+              float red, float green, float blue,
+              float amIntensity, float dIntensity,
+              float xPos, float yPos, float zPos,
+              float xDir, float yDir, float zDir,
+              float con, float lin, float exp,
+              float edge);
 
-    void UseLight(GLuint ambientIntensityLocation, GLuint ambientColorLocation,
-                  GLuint diffuseIntensityLocation, GLuint positionLocation, GLuint directionLocation,
-                  GLuint constantLocation, GLuint linearLocation, GLuint exponentLocation,
-                  GLuint edgeLocation);
+    void UseLight(unsigned int ambientIntensityLocation, unsigned int ambientColorLocation,
+                  unsigned int diffuseIntensityLocation, unsigned int positionLocation, unsigned int directionLocation,
+                  unsigned int constantLocation, unsigned int linearLocation, unsigned int exponentLocation,
+                  unsigned int edgeLocation);
 
     void SetFlash(glm::vec3 pos, glm::vec3 dir);
     void Toggle();
+    const inline bool IsOn() { return isOn; }
 
     ~SpotLight();
 private:
     glm::vec3 direction;
 
-    GLfloat edge, processedEdge;
+    float edge, processedEdge;
 
     bool isOn;
 };

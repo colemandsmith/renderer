@@ -9,12 +9,12 @@ PointLight::PointLight() : Light() {
     farPlane = 0.0f;
 }
 
-PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
-                       GLfloat near, GLfloat far,
-                       GLfloat red, GLfloat green, GLfloat blue,
-                       GLfloat amIntensity, GLfloat dIntensity,
-                       GLfloat xPos, GLfloat yPos, GLfloat zPos,
-                       GLfloat con, GLfloat lin, GLfloat exp) : Light(shadowWidth, shadowHeight, red, green, blue, amIntensity, dIntensity) {
+PointLight::PointLight(unsigned int shadowWidth, unsigned int shadowHeight,
+                       float near, float far,
+                       float red, float green, float blue,
+                       float amIntensity, float dIntensity,
+                       float xPos, float yPos, float zPos,
+                       float con, float lin, float exp) : Light(shadowWidth, shadowHeight, red, green, blue, amIntensity, dIntensity) {
     position = glm::vec3(xPos, yPos, zPos);
     constant = con;
     linear = lin;
@@ -29,9 +29,9 @@ PointLight::PointLight(GLuint shadowWidth, GLuint shadowHeight,
     shadowMap->Init(shadowWidth, shadowHeight);
 }
 
-void PointLight::UseLight(GLuint ambientIntensityLocation, GLuint ambientColorLocation,
-                          GLuint diffuseIntensityLocation, GLuint positionLocation,
-                          GLuint constantLocation, GLuint linearLocation, GLuint exponentLocation) {
+void PointLight::UseLight(unsigned int ambientIntensityLocation, unsigned int ambientColorLocation,
+                          unsigned int diffuseIntensityLocation, unsigned int positionLocation,
+                          unsigned int constantLocation, unsigned int linearLocation, unsigned int exponentLocation) {
     glUniform3f(ambientColorLocation, color.x, color.y, color.z);
     glUniform1f(ambientIntensityLocation, ambientIntensity);
     glUniform1f(diffuseIntensityLocation, diffuseIntensity);
@@ -59,7 +59,7 @@ std::vector<glm::mat4> PointLight::CalculateLightTransform() {
     return lightMatrices;
 }
 
-GLfloat PointLight::GetFarPlane() {
+float PointLight::GetFarPlane() {
     return farPlane;
 }
 
