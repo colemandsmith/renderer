@@ -43,8 +43,8 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0,
        uniformEyePosition = 0, uniformSpecularIntensity = 0,
        uniformShininess = 0, uniformOmniLightPos, uniformFarPlane;
 
-static const char *vShader = "Shaders/shader.vert";
-static const char *fShader = "Shaders/shader.frag";
+static const char *vShader = "Shaders/unlit.vert";
+static const char *fShader = "Shaders/unlit.frag";
 
 void CreateShaders() {
   Shader *defaultShader = new Shader();
@@ -111,7 +111,7 @@ void CalcAverageNormals(unsigned int *indices, unsigned int indexCount,
   }
 }
 
-void CreateSimplePolygons() {
+void CreateSimplePolygons(OpenGLRenderer *renderer) {
   unsigned int indices[] = {
       2, 1, 0, 0, 1, 3, 3, 1, 2, 2, 0, 3,
   };
@@ -147,18 +147,23 @@ void CreateSimplePolygons() {
   Mesh *obj3 = new Mesh();
   obj3->CreateMesh(floorVertices, floorIndices, 44, 6);
   meshList.push_back(obj3);
+
+  for (const Mesh *mesh : meshList) {
+    renderer->SubmitMesh(mesh);
+  }
 }
 
-void SetupObjects() {
+void SetupObjects(OpenGLRenderer *renderer) {
   mainWindow = Window(1366, 768);
   mainWindow.Initialize();
-  CreateSimplePolygons();
+  CreateShaders();
+  CreateSimplePolygons(renderer);
 
-  brickTexture = Texture("Textures/brick.png");
-  brickTexture.LoadTextureA();
+  brickTexture = Texture("Textures/brick.pnt");
+  renderer->SubmitTexture(&brickTexture);
 
   dirtTexture = Texture("Textures/dirt.png");
-  dirtTexture.LoadTextureA();
+  renderer->SubmitTexture(&dirtTexture);
 
   shinyMaterial = Material(4.0f, 256);
   dullMaterial = Material(0.3f, 0);
@@ -167,42 +172,75 @@ void SetupObjects() {
                                -10.0f, -12.0f, 19.0f);
 }
 
-void RenderScene(Shader *shader) {
+void RenderScene(OpenGLRenderer *renderer) {
   glm::mat4 model(1.0f);
 
   model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  brickTexture.UseTexture();
+  renderer->UseTexture(&brickTexture);
   shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-  // meshList[0]->RenderMesh();
+  renderer->RenderMesh(meshList[0]);
 
   model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  dirtTexture.UseTexture();
+  renderer->UseTexture(&dirtTexture);
   dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-  // meshList[1]->RenderMesh();
+  renderer->RenderMesh(meshList[1]);
 
   model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  dirtTexture.UseTexture();
+  renderer->UseTexture(&dirtTexture);
   shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-  // meshList[2]->RenderMesh();
+  renderer->RenderMesh(meshList[2]);
+
+}
+
+void MainRenderPass(OpenGLRenderer *renderer, glm::mat4 projection,
+                    glm::mat4 view) {
+  glViewport(0, 0, 1366, 768);
+
+  // clear window
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+  shaderList[0]->UseShader();
+
+  uniformModel = shaderList[0]->GetModelLocation();
+  uniformProjection = shaderList[0]->GetProjectionLocation();
+  uniformView = shaderList[0]->GetViewLocation();
+  uniformEyePosition = shaderList[0]->GetEyePositionLocation();
+  uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
+  uniformShininess = shaderList[0]->GetShininessLocation();
+
+  glUniformMatrix4fv(uniformProjection, 1, GL_FALSE,
+                     glm::value_ptr(projection));
+  glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(view));
+  glUniform3f(uniformEyePosition, camera.GetCameraPosition().x,
+              camera.GetCameraPosition().y, camera.GetCameraPosition().z);
+
+  shaderList[0]->SetDirectionalLight(&mainLight);
+
+  RenderScene(renderer);
+}
+
+void PerformRenderPasses(OpenGLRenderer *renderer, Camera &camera,
+                 glm::mat4 projection) {
+  MainRenderPass(renderer, projection, camera.CalculateViewMatrix());
 }
 
 int main() {
-
-  SetupObjects();
+  OpenGLRenderer *renderer = new OpenGLRenderer();
+  SetupObjects(renderer);
   glm::mat4 projection =
       glm::perspective(glm::radians(60.0f),
                        (GLfloat)mainWindow.getBufferWidth() /
                            (GLfloat)mainWindow.getBufferHeight(),
                        0.1f, 100.0f);
-  OpenGLRenderer *renderer = new OpenGLRenderer();
 
   // Loop until window closed
   while (!mainWindow.getShouldClose()) {
@@ -216,12 +254,12 @@ int main() {
     camera.KeyControl(mainWindow.getKeys(), deltaTime);
     camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
-    // if (mainWindow.getKeys()[GLFW_KEY_L]) {
-    //     spotLights[0].Toggle();
-    //     mainWindow.getKeys()[GLFW_KEY_L] = false;
-    // }
+    if (mainWindow.getKeys()[GLFW_KEY_L]) {
+      spotLights[0].Toggle();
+      mainWindow.getKeys()[GLFW_KEY_L] = false;
+    }
 
-    // PerformRenderPasses(projection);
+   PerformRenderPasses(renderer, camera, projection);
 
     mainWindow.SwapBufffers();
   }

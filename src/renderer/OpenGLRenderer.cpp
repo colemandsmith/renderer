@@ -4,6 +4,27 @@
 
 OpenGLRenderer::OpenGLRenderer() {}
 
+void OpenGLRenderer::UseTexture(const Texture *texture) {
+  UseTexture(texture, GL_TEXTURE1);
+}
+
+void OpenGLRenderer::UseTexture(const Texture *texture, GLenum textureUnit) {
+  unsigned int textureId = textureBindings[texture];
+  glActiveTexture(textureUnit);
+  glBindTexture(GL_TEXTURE_2D, textureId);
+}
+
+void OpenGLRenderer::RenderMesh(const Mesh *mesh) {
+  MeshBindingData d = meshBindings[mesh];
+  glBindVertexArray(d.VAO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, d.IBO);
+  glDrawElements(GL_TRIANGLES, d.indexCount, GL_UNSIGNED_INT, 0);
+
+  // unbind
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
 void OpenGLRenderer::SubmitTexture(const Texture *texture) {
   textureBindings.emplace(texture, 0);
   glGenTextures(1, &(textureBindings[texture]));
@@ -14,7 +35,7 @@ void OpenGLRenderer::SubmitTexture(const Texture *texture) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  if (texture->GetColorSpace() == TextureColorSpace::RGBA) {
+  if (texture->GetBitDepth() == RGBA) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->GetWidth(),
                  texture->GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
                  texture->GetTextureData());

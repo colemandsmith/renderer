@@ -14,16 +14,7 @@ Texture::Texture(const char* fileLoc) {
 	height = 0;
 	bitDepth = 0;
 	fileLocation = fileLoc;
-}
-
-const bool Texture::LoadTextureA() {
-	unsigned char* textureData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
-	if (!textureData) {
-		printf("Failed to find %s\n", fileLocation);
-		return false;
-	}
-
-    return true;
+  LoadTexture();
 }
 
 const bool Texture::LoadTexture() {
@@ -36,19 +27,10 @@ const bool Texture::LoadTexture() {
     return true;
 }
 
-
-void Texture::UseTexture() {
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, textureId);
-}
-
-void Texture::UseTexture(GLenum textureUnit) {
-    glActiveTexture(textureUnit);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-}
-
 void Texture::ClearTexture() {
+  if (textureData != nullptr) {
     stbi_image_free(textureData);
+  }
 	// glDeleteTextures(1, &textureId);
 	// textureId = 0;
 	// width = 0;
