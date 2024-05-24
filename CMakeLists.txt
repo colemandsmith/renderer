@@ -83,10 +83,11 @@ set(SOURCES
     src/renderer/Material.cpp
     src/renderer/Mesh.cpp
     # src/renderer/Model.cpp
-    # src/renderer/OmniShadowMap.cpp
+    src/renderer/OpenGLRenderer.cpp
+    src/renderer/OmniShadowMap.cpp
     src/renderer/PointLight.cpp
-    src/renderer/RenderObject.cpp
-    src/renderer/Scene.cpp
+    # src/renderer/RenderObject.cpp
+    #src/renderer/Scene.cpp
     src/renderer/Shader.cpp
     src/renderer/ShaderManager.cpp
     src/renderer/ShadowMap.cpp

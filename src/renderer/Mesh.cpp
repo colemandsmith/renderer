@@ -14,12 +14,12 @@ void Mesh::CreateMesh(GLfloat* vertices, unsigned int* indices, unsigned int num
     this->numIndices = numOfIndices;
 }
 
-const float* Mesh::GetVertices(int &out_numVertices) {
+float* Mesh::GetVertices(int &out_numVertices) const {
     out_numVertices = numVertices;
     return vertices;
 }
 
-const unsigned int* Mesh::GetIndices(int &out_numIndices) {
+unsigned int* Mesh::GetIndices(int &out_numIndices) const {
     out_numIndices = numIndices;
     return indices;
 }

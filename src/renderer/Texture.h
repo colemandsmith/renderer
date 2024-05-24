@@ -21,7 +21,11 @@ public:
 	void UseTexture();
     void UseTexture(GLenum textureUnit);
 	void ClearTexture();
-    inline const TextureColorSpace GetColorSpace() { return colorSpace; }
+    inline TextureColorSpace GetColorSpace() const { return colorSpace; }
+    inline int GetHeight() const { return height; }
+    inline int GetWidth() const { return width; }
+    inline int GetBitDepth() const { return bitDepth; }
+    inline unsigned char* GetTextureData() const { return textureData; }
 	~Texture();
 
 private:

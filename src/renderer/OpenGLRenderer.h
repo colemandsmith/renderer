@@ -16,10 +16,10 @@ struct RenderOp {
 };
 
 struct MeshBindingData {
-    unsigned int VAO;
-    unsigned int VBO;
-    unsigned int IBO;
-    int indexCount;
+    unsigned int VAO = 0;
+    unsigned int VBO = 0;
+    unsigned int IBO = 0;
+    int indexCount = 0;
 };
 
 class OpenGLRenderer {
@@ -32,16 +32,16 @@ public:
     // Rendering
 
     // Loading and binding
-    void SubmitModel(const Model* model);
+    // void SubmitModel(const Model* model);
     void SubmitMesh(const Mesh* mesh);
     void SubmitTexture(const Texture* texture);
-    void ClearModel(const Model* model);
+    // void ClearModel(const Model* model);
     void ClearMesh(const Mesh* mesh);
     void ClearTexture(const Texture* texture);
-    void SetAmbientLight(float red, float green, float blue);
+    // void SetAmbientLight(float red, float green, float blue);
     
 private:
     void RenderScene(Shader* shader);
-    std::unordered_map<Mesh*, MeshBindingData> meshBindings;
-    std::unordered_map<Texture*, unsigned int> textureBindings;
+    std::unordered_map<const Mesh*, MeshBindingData> meshBindings;
+    std::unordered_map<const Texture*, unsigned int> textureBindings;
 };

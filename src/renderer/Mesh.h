@@ -10,8 +10,8 @@ public:
 
     void CreateMesh(float *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
 
-    const float* GetVertices(int &out_numVertices);
-    const unsigned int* GetIndices(int &out_numIndices);
+    float* GetVertices(int &out_numVertices) const;
+    unsigned int* GetIndices(int &out_numIndices) const;
     
     ~Mesh();
 
