@@ -293,7 +293,6 @@ void SetupObjects() {
 }
 
 void RenderNormalMapModels(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
-
     shaderList[1]->UseShader();
 
     uniformModel = shaderList[1]->GetModelLocation();

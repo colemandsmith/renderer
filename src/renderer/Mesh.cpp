@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#include <stdio.h>
+
 Mesh::Mesh() {
     vertices = nullptr;
     indices = nullptr;

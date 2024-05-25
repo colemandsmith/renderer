@@ -24,17 +24,16 @@ Window mainWindow;
 Camera camera;
 
 std::vector<Mesh *> meshList;
-std::vector<Shader *> shaderList;
-Shader directionalShadowShader;
+Shader *defaultShader;
 
-Texture brickTexture;
-Texture dirtTexture;
+// Texture brickTexture;
+// Texture dirtTexture;
 Material shinyMaterial;
 Material dullMaterial;
 
 DirectionalLight mainLight;
-PointLight pointLights[MAX_POINT_LIGHTS];
-SpotLight spotLights[MAX_SPOT_LIGHTS];
+// PointLight pointLights[MAX_POINT_LIGHTS];
+// SpotLight spotLights[MAX_SPOT_LIGHTS];
 
 float deltaTime = 0.0f;
 float lastTime = 0.0f;
@@ -47,25 +46,8 @@ static const char *vShader = "Shaders/unlit.vert";
 static const char *fShader = "Shaders/unlit.frag";
 
 void CreateShaders() {
-  Shader *defaultShader = new Shader();
+  defaultShader = new Shader();
   defaultShader->CreateFromFiles(vShader, fShader);
-  shaderList.push_back(defaultShader);
-
-  Shader *normalMapShader = new Shader();
-  normalMapShader->CreateFromFiles("Shaders/normal_map_shader.vert",
-                                   "Shaders/normal_map_shader.frag");
-  shaderList.push_back(normalMapShader);
-
-  directionalShadowShader = Shader();
-  directionalShadowShader.CreateFromFiles(
-      "Shaders/directional_shadow_map.vert",
-      "Shaders/directional_shadow_map.frag");
-
-  // omniShadowShader.CreateFromFiles(
-  //     "Shaders/omni_shadow_map.vert",
-  //     "Shaders/omni_shadow_map.geom",
-  //     "Shaders/omni_shadow_map.frag"
-  // );
 }
 
 void CalcAverageNormals(unsigned int *indices, unsigned int indexCount,
@@ -156,14 +138,12 @@ void CreateSimplePolygons(OpenGLRenderer *renderer) {
 void SetupObjects(OpenGLRenderer *renderer) {
   mainWindow = Window(1366, 768);
   mainWindow.Initialize();
-  CreateShaders();
+
   CreateSimplePolygons(renderer);
+  CreateShaders();
 
-  brickTexture = Texture("Textures/brick.pnt");
-  renderer->SubmitTexture(&brickTexture);
-
-  dirtTexture = Texture("Textures/dirt.png");
-  renderer->SubmitTexture(&dirtTexture);
+  camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
+                  -90.0f, 0.0f, 5.0f, 0.5f);
 
   shinyMaterial = Material(4.0f, 256);
   dullMaterial = Material(0.3f, 0);
@@ -177,45 +157,44 @@ void RenderScene(OpenGLRenderer *renderer) {
 
   model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  renderer->UseTexture(&brickTexture);
+  // renderer->UseTexture(&dirtTexture);
   shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
   renderer->RenderMesh(meshList[0]);
 
-  model = glm::mat4(1.0f);
-  model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
-  glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  renderer->UseTexture(&dirtTexture);
-  dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+  // model = glm::mat4(1.0f);
+  // model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
+  // glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+  // renderer->UseTexture(&dirtTexture);
+  // shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-  renderer->RenderMesh(meshList[1]);
+  // renderer->RenderMesh(meshList[1]);
 
   model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  renderer->UseTexture(&dirtTexture);
+  // renderer->UseTexture(&dirtTexture);
   shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
   renderer->RenderMesh(meshList[2]);
-
 }
 
 void MainRenderPass(OpenGLRenderer *renderer, glm::mat4 projection,
                     glm::mat4 view) {
-  glViewport(0, 0, 1366, 768);
+  glViewport(0, 0, 1920, 1080);
 
   // clear window
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  shaderList[0]->UseShader();
+  defaultShader->UseShader();
 
-  uniformModel = shaderList[0]->GetModelLocation();
-  uniformProjection = shaderList[0]->GetProjectionLocation();
-  uniformView = shaderList[0]->GetViewLocation();
-  uniformEyePosition = shaderList[0]->GetEyePositionLocation();
-  uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
-  uniformShininess = shaderList[0]->GetShininessLocation();
+  uniformModel = defaultShader->GetModelLocation();
+  uniformProjection = defaultShader->GetProjectionLocation();
+  uniformView = defaultShader->GetViewLocation();
+  uniformEyePosition = defaultShader->GetEyePositionLocation();
+  uniformSpecularIntensity = defaultShader->GetSpecularIntensityLocation();
+  uniformShininess = defaultShader->GetShininessLocation();
 
   glUniformMatrix4fv(uniformProjection, 1, GL_FALSE,
                      glm::value_ptr(projection));
@@ -223,14 +202,99 @@ void MainRenderPass(OpenGLRenderer *renderer, glm::mat4 projection,
   glUniform3f(uniformEyePosition, camera.GetCameraPosition().x,
               camera.GetCameraPosition().y, camera.GetCameraPosition().z);
 
-  shaderList[0]->SetDirectionalLight(&mainLight);
+  defaultShader->SetDirectionalLight(&mainLight);
+  glm::mat4 lightTransform = mainLight.CalculateLightTransform();
+  defaultShader->SetDirectionalLightTransform(&lightTransform);
+
+  defaultShader->Validate();
 
   RenderScene(renderer);
 }
 
-void PerformRenderPasses(OpenGLRenderer *renderer, Camera &camera,
-                 glm::mat4 projection) {
-  MainRenderPass(renderer, projection, camera.CalculateViewMatrix());
+void PerformRenderPasses(OpenGLRenderer *renderer, glm::mat4 projection) {
+  glm::mat4 view = camera.CalculateViewMatrix();
+  MainRenderPass(renderer, projection, view);
+}
+
+void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id,
+                            GLenum severity, GLsizei length,
+                            const char *message, const void *userParam) {
+  // ignore non-significant error/warning codes
+  if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
+    return;
+
+  std::cout << "---------------" << std::endl;
+  std::cout << "Debug message (" << id << "): " << message << std::endl;
+
+  switch (source) {
+  case GL_DEBUG_SOURCE_API:
+    std::cout << "Source: API";
+    break;
+  case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+    std::cout << "Source: Window System";
+    break;
+  case GL_DEBUG_SOURCE_SHADER_COMPILER:
+    std::cout << "Source: Shader Compiler";
+    break;
+  case GL_DEBUG_SOURCE_THIRD_PARTY:
+    std::cout << "Source: Third Party";
+    break;
+  case GL_DEBUG_SOURCE_APPLICATION:
+    std::cout << "Source: Application";
+    break;
+  case GL_DEBUG_SOURCE_OTHER:
+    std::cout << "Source: Other";
+    break;
+  }
+  std::cout << std::endl;
+
+  switch (type) {
+  case GL_DEBUG_TYPE_ERROR:
+    std::cout << "Type: Error";
+    break;
+  case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+    std::cout << "Type: Deprecated Behaviour";
+    break;
+  case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+    std::cout << "Type: Undefined Behaviour";
+    break;
+  case GL_DEBUG_TYPE_PORTABILITY:
+    std::cout << "Type: Portability";
+    break;
+  case GL_DEBUG_TYPE_PERFORMANCE:
+    std::cout << "Type: Performance";
+    break;
+  case GL_DEBUG_TYPE_MARKER:
+    std::cout << "Type: Marker";
+    break;
+  case GL_DEBUG_TYPE_PUSH_GROUP:
+    std::cout << "Type: Push Group";
+    break;
+  case GL_DEBUG_TYPE_POP_GROUP:
+    std::cout << "Type: Pop Group";
+    break;
+  case GL_DEBUG_TYPE_OTHER:
+    std::cout << "Type: Other";
+    break;
+  }
+  std::cout << std::endl;
+
+  switch (severity) {
+  case GL_DEBUG_SEVERITY_HIGH:
+    std::cout << "Severity: high";
+    break;
+  case GL_DEBUG_SEVERITY_MEDIUM:
+    std::cout << "Severity: medium";
+    break;
+  case GL_DEBUG_SEVERITY_LOW:
+    std::cout << "Severity: low";
+    break;
+  case GL_DEBUG_SEVERITY_NOTIFICATION:
+    std::cout << "Severity: notification";
+    break;
+  }
+  std::cout << std::endl;
+  std::cout << std::endl;
 }
 
 int main() {
@@ -241,6 +305,17 @@ int main() {
                        (GLfloat)mainWindow.getBufferWidth() /
                            (GLfloat)mainWindow.getBufferHeight(),
                        0.1f, 100.0f);
+  int flags;
+  glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+  if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+    // initialize debug output
+    printf("debug init\n");
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr,
+                          GL_TRUE);
+  }
 
   // Loop until window closed
   while (!mainWindow.getShouldClose()) {
@@ -254,15 +329,11 @@ int main() {
     camera.KeyControl(mainWindow.getKeys(), deltaTime);
     camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 
-    if (mainWindow.getKeys()[GLFW_KEY_L]) {
-      spotLights[0].Toggle();
-      mainWindow.getKeys()[GLFW_KEY_L] = false;
-    }
-
-   PerformRenderPasses(renderer, camera, projection);
+    PerformRenderPasses(renderer, projection);
 
     mainWindow.SwapBufffers();
   }
 
+  delete renderer;
   return 0;
 }
