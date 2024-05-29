@@ -16,8 +16,6 @@ public:
         float amIntensity, float dIntensity
     );
 
-    ShadowMap* GetShadowMap() { return shadowMap; };
-
 	~Light();
 
 protected:
@@ -26,7 +24,5 @@ protected:
 	float diffuseIntensity;
 
     glm::mat4 lightProj;
-
-    ShadowMap* shadowMap;
 };
 

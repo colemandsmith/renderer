@@ -1,20 +1,17 @@
 #include "Material.h"
 
-Material::Material()  {
+Material::Material(std::shared_ptr<Shader> shader)  {
+    this->shader = shader;
 	specularIntensity = 0.0f;
 	shininess = 0.0f;
 }
 
-Material::Material(GLfloat sIntensity, GLfloat shine) {
+Material::Material(std::shared_ptr<Shader> shader, float sIntensity, float shine) {
+    this->shader = shader;
 	specularIntensity = sIntensity;
 	shininess = shine;
 }
 
-void Material::UseMaterial(GLuint specularIntensityLocation, GLuint shininessLocation) {
-	glUniform1f(specularIntensityLocation, specularIntensity);
-	glUniform1f(shininessLocation, shininess);
-}
-
 Material::~Material() {
-
+    
 }

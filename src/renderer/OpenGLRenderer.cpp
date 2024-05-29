@@ -5,22 +5,38 @@
 OpenGLRenderer::OpenGLRenderer() {}
 
 void OpenGLRenderer::UseTexture(const Texture *texture) {
-  UseTexture(texture, GL_TEXTURE1);
+  UseTexture(texture, 1);
 }
 
-void OpenGLRenderer::UseTexture(const Texture *texture, GLenum textureUnit) {
+void OpenGLRenderer::UseTexture(const Texture *texture,
+                                unsigned char textureUnit) {
+  if (texture == nullptr)
+    return;
   unsigned int textureId = textureBindings[texture];
-  glActiveTexture(textureUnit);
+  glActiveTexture(GL_TEXTURE1 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, textureId);
 }
 
+void OpenGLRenderer::UseMaterial(const Material *material) {
+  if (material == nullptr)
+    return;
+  Shader *shader = material->GetShader();
+  if (shader) {
+    glUniform1f(shader->GetSpecularIntensityLocation(),
+                material->GetSpecularIntensity());
+    glUniform1f(shader->GetShininessLocation(), material->GetShininess());
+  }
+}
+
 void OpenGLRenderer::RenderMesh(const Mesh *mesh) {
-  //unbind
+  if (mesh == nullptr)
+    return;
+  // unbind
   glBindVertexArray(0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   MeshBindingData d = meshBindings[mesh];
-  
+
   glBindVertexArray(d.VAO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, d.IBO);
   glDrawElements(GL_TRIANGLES, d.indexCount, GL_UNSIGNED_INT, 0);
@@ -31,6 +47,8 @@ void OpenGLRenderer::RenderMesh(const Mesh *mesh) {
 }
 
 void OpenGLRenderer::SubmitTexture(const Texture *texture) {
+  if (texture == nullptr)
+    return;
   textureBindings.emplace(texture, 0);
   glGenTextures(1, &(textureBindings[texture]));
   glBindTexture(GL_TEXTURE_2D, textureBindings[texture]);
@@ -55,20 +73,14 @@ void OpenGLRenderer::SubmitTexture(const Texture *texture) {
 }
 
 void OpenGLRenderer::SubmitMesh(const Mesh *mesh) {
+  if (mesh == nullptr)
+    return;
   MeshBindingData d = {};
   meshBindings.emplace(mesh, d);
   int numIndices, numVertices;
 
   const unsigned int *indices = mesh->GetIndices(numIndices);
   const float *vertices = mesh->GetVertices(numVertices);
-  // debug
-  std::cout << "--- input vertices ---" << std::endl;
-  std::cout << "num vertices: " << numVertices << std::endl;
-  for (int i = 0; i < numVertices; i++) {
-    std::cout << vertices[i] << " ";
-  }
-  std::cout << std::endl;
-  // debug end!
 
   meshBindings[mesh].indexCount = numIndices;
 
@@ -84,17 +96,6 @@ void OpenGLRenderer::SubmitMesh(const Mesh *mesh) {
   glBindBuffer(GL_ARRAY_BUFFER, meshBindings[mesh].VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, vertices,
                GL_STATIC_DRAW);
-
-  // debug
-  std::cout << "retrieved vertices:" << std::endl;
-  float data[88];
-  glGetBufferSubData(GL_ARRAY_BUFFER, 0, 88, data);
-  for (int i = 0; i < 88; i++) {
-    std::cout << data[i] << " ";
-  }
-  std::cout << std::endl;
-  // debug end!
-
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 11, 0);
   glEnableVertexAttribArray(0);
@@ -124,7 +125,6 @@ void OpenGLRenderer::ClearTexture(const Texture *texture) {
 }
 
 void OpenGLRenderer::ClearMesh(const Mesh *mesh) {
-  printf("clearing mesh???");
   MeshBindingData bindingData = meshBindings[mesh];
   if (bindingData.IBO != 0) {
     glDeleteBuffers(1, &bindingData.IBO);
