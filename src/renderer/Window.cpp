@@ -11,7 +11,7 @@ Window::Window() {
     yChange = 0.0f;
 }
 
-Window::Window(GLint windowWidth, GLint windowHeight) {
+Window::Window(int windowWidth, int windowHeight) {
 	width = windowWidth;
 	height = windowHeight;
 
@@ -30,16 +30,6 @@ int Window::Initialize() {
         return 1;
     }
 
-    // Set up GLFW window properties
-    // OpenGL version
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // Core profile = not backwards compatibility
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Allow forward compatibility
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
     mainWindow = glfwCreateWindow(width, height, "Test Window", NULL, NULL);
     if (!mainWindow) {
         printf("GLFW window creation failed!");
@@ -48,27 +38,6 @@ int Window::Initialize() {
     }
 
     glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-
-    // Set context for GLEW to use
-    glfwMakeContextCurrent(mainWindow);
-
-    // Allow modern extension features
-    glewExperimental = GL_TRUE;
-
-    if (glewInit() != GLEW_OK) {
-        printf("GLEW initalization failed!");
-        glfwDestroyWindow(mainWindow);
-        glfwTerminate();
-        return 1;
-    }
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
-
-    // Set up viewport size
-    glViewport(0, 0, bufferWidth, bufferHeight);
-
     // Handle key + mouse input
     createCallBacks();
     glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -114,14 +83,14 @@ void Window::createCallBacks() {
     glfwSetCursorPosCallback(mainWindow, handleMouse);
 }
 
-GLfloat Window::getXChange() {
-    GLfloat theChange = xChange;
+float Window::getXChange() {
+    float theChange = xChange;
     xChange = 0.0f;
     return theChange;
 }
 
-GLfloat Window::getYChange() {
-    GLfloat theChange = yChange;
+float Window::getYChange() {
+    float theChange = yChange;
     yChange = 0.0f;
     return theChange;
 }

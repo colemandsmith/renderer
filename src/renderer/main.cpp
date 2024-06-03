@@ -1,4 +1,4 @@
-#define STB_IMAGE_IMPLEMENTATION    meshBindings.clear();
+#define STB_IMAGE_IMPLEMENTATION
 #include <iostream>
 #include <stdio.h>
 #include <string.h>

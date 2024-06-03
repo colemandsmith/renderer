@@ -5,14 +5,16 @@
 
 #include <glm/glm.hpp>
 
+#include "Renderer.h"
 #include "Camera.h"
 #include "CommonValues.h"
 #include "Mesh.h"
 #include "RenderObject.h"
-#include "Renderer.h"
 #include "Shader.h"
+#include "ShaderManager.h"
 #include "SpotLight.h"
 #include "Texture.h"
+#include "Window.h"
 
 struct MeshBindingData {
   unsigned int VAO = 0;
@@ -21,18 +23,21 @@ struct MeshBindingData {
   int indexCount = 0;
 };
 
-class OpenGLRenderer : public RendererInterface {
+class OpenGLRenderer : public Renderer {
 public:
   OpenGLRenderer();
   ~OpenGLRenderer();
 
-  //  ------ Rendering ------
+  // ------ Setup ------
+  bool SetupViewport(Window* window) override;
+
+  // ------ Rendering ------
 
   // Shader and uniform management
-  void UseShader();
+  void UseShader(const Shader *shader) override;
   void UseMaterial(const Material *material) override;
 
-  //
+  // Geometry and textures
   void UseTexture(const Texture *texture) override;
   void UseTexture(const Texture *texture, unsigned char textureUnit) override;
   void RenderMesh(const Mesh *mesh) override;
@@ -47,6 +52,8 @@ public:
   void ClearTexture(const Texture *texture) override;
 
 private:
+  ShaderId currentShader;
+  ShaderManager shaderManager;
   void RenderScene(Shader *shader);
   std::unordered_map<const Mesh *, MeshBindingData> meshBindings;
   std::unordered_map<const Texture *, unsigned int> textureBindings;

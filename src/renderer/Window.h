@@ -1,45 +1,47 @@
 #pragma once
 
-#include <stdio.h>
+#include <memory>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <stdio.h>
 
 class Window {
 public:
-	Window();
-	Window(GLint windowWidth, GLint windowHeight);
+  Window();
+  Window(int windowWidth, int windowHeight);
 
-	int Initialize();
+  int Initialize();
 
-    GLint getBufferWidth() { return bufferWidth; };
-    GLint getBufferHeight() { return bufferHeight; };
+  int GetBufferWidth() const { return bufferWidth; };
+  int GetBufferHeight() const { return bufferHeight; };
+  GLFWwindow* GetGlfwWindow() { return mainWindow; }
 
-	bool getShouldClose() { return glfwWindowShouldClose(mainWindow); }
+  bool getShouldClose() const { return glfwWindowShouldClose(mainWindow); }
 
-	bool* getKeys() { return keys;  }
-	GLfloat getXChange();
-	GLfloat getYChange();
+  const bool *getKeys() const { return keys; }
+  float getXChange();
+  float getYChange();
 
-	void SwapBufffers() { glfwSwapBuffers(mainWindow); }
+  void SwapBufffers() const { glfwSwapBuffers(mainWindow); }
 
-	~Window();
+  ~Window();
 
 private:
-	GLFWwindow* mainWindow;
+  GLFWwindow* mainWindow = nullptr;
 
-	GLint width, height;
-	GLint bufferHeight, bufferWidth;
+  int width, height;
+  int bufferHeight, bufferWidth;
 
-	bool keys[1024];
+  bool keys[1024];
 
-	GLfloat lastX;
-	GLfloat lastY;
-	GLfloat xChange;
-	GLfloat yChange;
-	bool mouseFirstMoved;
+  float lastX;
+  float lastY;
+  float xChange;
+  float yChange;
+  bool mouseFirstMoved;
 
-	void createCallBacks();
-	static void handleKeys(GLFWwindow* window, int key, int code, int action, int mode);
-	static void handleMouse(GLFWwindow* window, double xPos, double yPos);
+  void createCallBacks();
+  static void handleKeys(GLFWwindow *window, int key, int code, int action,
+                         int mode);
+  static void handleMouse(GLFWwindow *window, double xPos, double yPos);
 };
-

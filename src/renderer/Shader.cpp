@@ -228,51 +228,51 @@ void Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
     glAttachShader(theProgram, theShader);
 }
 
-GLuint Shader::GetProjectionLocation() {
+GLuint Shader::GetProjectionLocation() const {
     return uniformProjection;
 }
 
-GLuint Shader::GetModelLocation() {
+GLuint Shader::GetModelLocation() const {
     return uniformModel;
 }
 
-GLuint Shader::GetEyePositionLocation() {
+GLuint Shader::GetEyePositionLocation() const {
     return uniformEyePosition;
 }
 
-GLuint Shader::GetViewLocation() {
+GLuint Shader::GetViewLocation() const {
     return uniformView;
 }
 
-GLuint Shader::GetAmbientColorLocation() {
+GLuint Shader::GetAmbientColorLocation() const {
     return uniformDirectionalLight.uniformColor;
 }
 
-GLuint Shader::GetAmbientIntensityLocation() {
+GLuint Shader::GetAmbientIntensityLocation() const {
     return uniformDirectionalLight.uniformAmbientIntensity;
 }
 
-GLuint Shader::GetDiffuseIntensityLocation() {
+GLuint Shader::GetDiffuseIntensityLocation() const {
     return uniformDirectionalLight.uniformDiffuseIntensity;
 }
 
-GLuint Shader::GetDirectionLocation() {
+GLuint Shader::GetDirectionLocation() const {
     return uniformDirectionalLight.uniformDirection;
 }
 
-GLuint Shader::GetSpecularIntensityLocation() {
+GLuint Shader::GetSpecularIntensityLocation() const {
     return uniformSpecularIntensity;
 }
 
-GLuint Shader::GetShininessLocation() {
+GLuint Shader::GetShininessLocation() const {
     return uniformShininess;
 }
 
-GLuint Shader::GetOmniLightPosLocation() {
+GLuint Shader::GetOmniLightPosLocation() const {
     return uniformOmniLightPos;
 }
 
-GLuint Shader::GetFarPlaneLocation() {
+GLuint Shader::GetFarPlaneLocation() const {
     return uniformFarPlane;
 }
 
@@ -298,7 +298,7 @@ void Shader::SetPointLights(PointLight* pLight, unsigned int lightCount, int tex
                            uniformPointLight[i].uniformExponent);
 
         // dynamically set which texture we want to get
-        pLight[i].GetShadowMap()->Read(GL_TEXTURE0 + textureUnit + i);
+        // pLight[i].GetShadowMap()->Read(GL_TEXTURE0 + textureUnit + i);
         glUniform1i(uniformOmniShadowMap[i + offset].shadowMap, textureUnit + i);
         glUniform1f(uniformOmniShadowMap[i + offset].farPlane, pLight[i].GetFarPlane());
     }
@@ -324,7 +324,7 @@ void Shader::SetSpotLights(SpotLight* sLight, unsigned int spotLightCount, int t
         );
 
         // dynamically set which texture we want to get
-        sLight[i].GetShadowMap()->Read(GL_TEXTURE0 + textureUnit + i);
+        // sLight[i].GetShadowMap()->Read(GL_TEXTURE0 + textureUnit + i);
         glUniform1i(uniformOmniShadowMap[i + offset].shadowMap, textureUnit + i);
         glUniform1f(uniformOmniShadowMap[i + offset].farPlane, sLight[i].GetFarPlane());
     }

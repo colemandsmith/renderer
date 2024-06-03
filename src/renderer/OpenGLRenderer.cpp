@@ -2,7 +2,56 @@
 
 #include <GL/glew.h>
 
-OpenGLRenderer::OpenGLRenderer() {}
+OpenGLRenderer::OpenGLRenderer() {
+  std::cout << "Initialized renderer!" << std::endl;
+}
+
+bool OpenGLRenderer::SetupViewport(Window* window) {
+    // Set up GLFW window properties
+    // OpenGL version
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    // Core profile = not backwards compatibility
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Allow forward compatibility
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    // Set context for GLEW to use
+    glfwMakeContextCurrent(window->GetGlfwWindow());
+
+    // Allow modern extension features
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK) {
+        printf("GLEW initalization failed!");
+        return false;
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_CULL_FACE);
+
+    // Set up viewport size
+    glViewport(0, 0, window->GetBufferWidth(), window->GetBufferHeight());
+    return true;
+}
+
+void OpenGLRenderer::UseShader(const Shader *shader) {
+
+}
+
+void OpenGLRenderer::UseMaterial(const Material *material) {
+  if (material == nullptr)
+    return;
+  const ShaderId matShaderId = material->GetShaderId();
+  const Shader* shader = shaderManager.GetShaderById(matShaderId);
+  if (shader) {
+    glUniform1f(shader->GetSpecularIntensityLocation(),
+                material->GetSpecularIntensity());
+    glUniform1f(shader->GetShininessLocation(), material->GetShininess());
+  }
+}
 
 void OpenGLRenderer::UseTexture(const Texture *texture) {
   UseTexture(texture, 1);
@@ -15,17 +64,6 @@ void OpenGLRenderer::UseTexture(const Texture *texture,
   unsigned int textureId = textureBindings[texture];
   glActiveTexture(GL_TEXTURE1 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, textureId);
-}
-
-void OpenGLRenderer::UseMaterial(const Material *material) {
-  if (material == nullptr)
-    return;
-  Shader *shader = material->GetShader();
-  if (shader) {
-    glUniform1f(shader->GetSpecularIntensityLocation(),
-                material->GetSpecularIntensity());
-    glUniform1f(shader->GetShininessLocation(), material->GetShininess());
-  }
 }
 
 void OpenGLRenderer::RenderMesh(const Mesh *mesh) {
@@ -75,8 +113,9 @@ void OpenGLRenderer::SubmitTexture(const Texture *texture) {
 void OpenGLRenderer::SubmitMesh(const Mesh *mesh) {
   if (mesh == nullptr)
     return;
-  MeshBindingData d = {};
-  meshBindings.emplace(mesh, d);
+  if (meshBindings.find(mesh) != meshBindings.end())
+    return;
+  meshBindings[mesh] = {};
   int numIndices, numVertices;
 
   const unsigned int *indices = mesh->GetIndices(numIndices);

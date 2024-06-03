@@ -4,10 +4,10 @@ Camera::Camera() {}
 
 Camera::Camera(glm::vec3 startPosition,
 			   glm::vec3 startUp, 
-			   GLfloat startYaw,
-			   GLfloat startPitch,
-			   GLfloat startMoveSpeed,
-			   GLfloat startTurnSpeed) {
+			   float startYaw,
+			   float startPitch,
+			   float startMoveSpeed,
+			   float startTurnSpeed) {
 	position = startPosition;
 	worldUp = startUp;
 	yaw = startYaw;
@@ -18,8 +18,8 @@ Camera::Camera(glm::vec3 startPosition,
 	turnSpeed = startTurnSpeed;
 }
 
-void Camera::KeyControl(bool* keys, GLfloat deltaTime) {
-	GLfloat velocity = moveSpeed * deltaTime;
+void Camera::KeyControl(const bool* keys, float deltaTime) {
+	float velocity = moveSpeed * deltaTime;
 	if (keys[GLFW_KEY_W]) {
 		position += front * velocity;
 	}
@@ -40,7 +40,7 @@ void Camera::KeyControl(bool* keys, GLfloat deltaTime) {
 	}
 }
 
-void Camera::mouseControl(GLfloat xChange, GLfloat yChange) {
+void Camera::mouseControl(float xChange, float yChange) {
 	xChange *= turnSpeed;
 	yChange *= turnSpeed;
 

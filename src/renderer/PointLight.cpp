@@ -24,9 +24,6 @@ PointLight::PointLight(unsigned int shadowWidth, unsigned int shadowHeight,
 
     float aspect = (float)shadowWidth / (float)shadowHeight;
     lightProj = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
-
-    shadowMap = new OmniShadowMap();
-    shadowMap->Init(shadowWidth, shadowHeight);
 }
 
 void PointLight::UseLight(unsigned int ambientIntensityLocation, unsigned int ambientColorLocation,

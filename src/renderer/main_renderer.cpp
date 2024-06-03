@@ -16,20 +16,19 @@
 
 #include "DirectionalLight.h"
 #include "Mesh.h"
-#include "OpenGLRenderer.h"
+#include "RenderEngine.h"
 #include "Shader.h"
-#include "Window.h"
 
-Window mainWindow;
 Camera camera;
 
 std::vector<Mesh *> meshList;
 Shader *defaultShader;
 
-// Texture brickTexture;
-// Texture dirtTexture;
-Material shinyMaterial;
-Material dullMaterial;
+Texture *brickTexture;
+Texture *dirtTexture;
+
+Material *shinyMaterial;
+Material *dullMaterial;
 
 DirectionalLight mainLight;
 // PointLight pointLights[MAX_POINT_LIGHTS];
@@ -48,10 +47,13 @@ static const char *fShader = "Shaders/shader.frag";
 void CreateShaders() {
   defaultShader = new Shader();
   defaultShader->CreateFromFiles(vShader, fShader);
+
+  shinyMaterial = new Material(defaultShader->GetShaderId(), 4.0f, 256.0f);
+  dullMaterial = new Material(defaultShader->GetShaderId(), 0.3f, 0);
 }
 
 void CalcAverageNormals(unsigned int *indices, unsigned int indexCount,
-                        GLfloat *vertices, unsigned int vertexCount,
+                        float *vertices, unsigned int vertexCount,
                         unsigned int vertexLength, unsigned int normalOffset) {
   for (size_t i = 0; i < indexCount; i += 3) {
     unsigned int index0 = indices[i] * vertexLength;
@@ -93,12 +95,12 @@ void CalcAverageNormals(unsigned int *indices, unsigned int indexCount,
   }
 }
 
-void CreateSimplePolygons(OpenGLRenderer *renderer) {
+void CreateSimplePolygons(Renderer *renderer) {
   unsigned int indices[] = {
       2, 1, 0, 0, 1, 3, 3, 1, 2, 2, 0, 3,
   };
-  GLfloat vertices[] = {
-      //   x       y     z         u     v       nx    ny    nz      tx    ty tz
+  float vertices[] = {
+      // x      y     z      u     v    nx    ny    nz    tx    ty    tz
       -1.0f, -1.0f, -0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
       0.0f,  -1.0f, 1.0f,  0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
       1.0f,  -1.0f, -0.6f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -111,7 +113,7 @@ void CreateSimplePolygons(OpenGLRenderer *renderer) {
       0, 2, 1, 1, 2, 3,
   };
 
-  GLfloat floorVertices[] = {
+  float floorVertices[] = {
       -10.0f, 0.0f, -10.f, 0.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
       10.0f,  0.0f, -10.f, 10.0f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
       -10.f,  0.0f, 10.0f, 0.0f,  10.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -135,9 +137,7 @@ void CreateSimplePolygons(OpenGLRenderer *renderer) {
   }
 }
 
-void SetupObjects(OpenGLRenderer *renderer) {
-  mainWindow = Window(1366, 768);
-  mainWindow.Initialize();
+void SetupObjects(Renderer *renderer) {
 
   CreateSimplePolygons(renderer);
   CreateShaders();
@@ -145,41 +145,43 @@ void SetupObjects(OpenGLRenderer *renderer) {
   camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 5.0f, 0.5f);
 
-  shinyMaterial = Material(4.0f, 256);
-  dullMaterial = Material(0.3f, 0);
+  brickTexture = new Texture("Textures/brick.png");
+  dirtTexture = new Texture("Textures/dirt.png");
+  renderer->SubmitTexture(brickTexture);
+  renderer->SubmitTexture(dirtTexture);
 
   mainLight = DirectionalLight(2048, 2048, 1.0f, 0.53f, 0.3f, 0.1f, 0.8f,
                                -10.0f, -12.0f, 19.0f);
 }
 
-void RenderScene(OpenGLRenderer *renderer) {
+void RenderScene(Renderer *renderer) {
   glm::mat4 model(1.0f);
 
   model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  // renderer->UseTexture(&dirtTexture);
-  shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+  renderer->UseTexture(dirtTexture);
+  renderer->UseMaterial(shinyMaterial);
 
   renderer->RenderMesh(meshList[0]);
 
-  // model = glm::mat4(1.0f);
-  // model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
-  // glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  // renderer->UseTexture(&dirtTexture);
-  // shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+  model = glm::mat4(1.0f);
+  model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
+  glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+  renderer->UseTexture(dirtTexture);
+  renderer->UseMaterial(shinyMaterial);
 
-  // renderer->RenderMesh(meshList[1]);
+  renderer->RenderMesh(meshList[1]);
 
   model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
   glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-  // renderer->UseTexture(&dirtTexture);
-  shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+  renderer->UseTexture(dirtTexture);
+  renderer->UseMaterial(shinyMaterial);
 
   renderer->RenderMesh(meshList[2]);
 }
 
-void MainRenderPass(OpenGLRenderer *renderer, glm::mat4 projection,
+void MainRenderPass(Renderer *renderer, glm::mat4 projection,
                     glm::mat4 view) {
   glViewport(0, 0, 1920, 1080);
 
@@ -211,7 +213,7 @@ void MainRenderPass(OpenGLRenderer *renderer, glm::mat4 projection,
   RenderScene(renderer);
 }
 
-void PerformRenderPasses(OpenGLRenderer *renderer, glm::mat4 projection) {
+void PerformRenderPasses(Renderer *renderer, glm::mat4 projection) {
   glm::mat4 view = camera.CalculateViewMatrix();
   MainRenderPass(renderer, projection, view);
 }
@@ -298,12 +300,12 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id,
 }
 
 int main() {
-  OpenGLRenderer *renderer = new OpenGLRenderer();
-  SetupObjects(renderer);
+  RenderEngine engine;
+  SetupObjects(engine.GetRenderer());
   glm::mat4 projection =
       glm::perspective(glm::radians(60.0f),
-                       (GLfloat)mainWindow.getBufferWidth() /
-                           (GLfloat)mainWindow.getBufferHeight(),
+                       (float)engine.GetWindow()->GetBufferWidth() /
+                           (float)engine.GetWindow()->GetBufferHeight(),
                        0.1f, 100.0f);
   int flags;
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
@@ -318,22 +320,21 @@ int main() {
   }
 
   // Loop until window closed
-  while (!mainWindow.getShouldClose()) {
-    GLfloat now = glfwGetTime();
+  while (!engine.GetWindow()->getShouldClose()) {
+    float now = glfwGetTime();
     deltaTime = now - lastTime;
     lastTime = now;
 
     // Get and handle user input events
     glfwPollEvents();
 
-    camera.KeyControl(mainWindow.getKeys(), deltaTime);
-    camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+    camera.KeyControl(engine.GetWindow()->getKeys(), deltaTime);
+    camera.mouseControl(engine.GetWindow()->getXChange(), engine.GetWindow()->getYChange());
 
-    PerformRenderPasses(renderer, projection);
+    PerformRenderPasses(engine.GetRenderer(), projection);
 
-    mainWindow.SwapBufffers();
+    engine.GetWindow()->SwapBufffers();
   }
 
-  delete renderer;
   return 0;
 }
