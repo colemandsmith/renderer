@@ -18,6 +18,7 @@ public:
                  GLfloat xRotation, GLfloat yRotation, GLfloat zRotation);
 
     void Render(Shader* shader);
+    glm::mat4 GetModelMatrix();
 
     ~RenderObject();
 private:

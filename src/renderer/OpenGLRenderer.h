@@ -30,6 +30,7 @@ public:
 
   // ------ Setup ------
   bool SetupViewport(Window* window) override;
+  void ClearWindow() override;
 
   // ------ Rendering ------
 

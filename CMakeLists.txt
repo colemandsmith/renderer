@@ -29,6 +29,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 list(APPEND LIBS glm::glm)
 
+set(YAML_CPP_BUILD_TOOLS OFF CACHE INTERNAL "Disable parse tools")
+
 FetchContent_Declare(
   yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
@@ -84,6 +86,8 @@ set(SOURCES
     src/renderer/Material.cpp
     src/renderer/Mesh.cpp
     # src/renderer/Model.cpp
+    src/renderer/RenderEngine.cpp
+    src/renderer/Renderer.cpp
     src/renderer/OpenGLRenderer.cpp
     src/renderer/OmniShadowMap.cpp
     src/renderer/PointLight.cpp

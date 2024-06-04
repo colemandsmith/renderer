@@ -31,7 +31,6 @@ void Model::RenderModel() {
             }
         }
 
-        meshList[i]->RenderMesh();
     }
 }
 

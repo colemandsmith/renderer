@@ -6,13 +6,21 @@
 
 #include "ShadowMap.h"
 
+enum LightType {
+  DIRECTIONAL_LIGHT,
+  POINT_LIGHT,
+  SPOT_LIGHT
+};
+
+typedef unsigned int LightId;
+
 class Light {
 public:
   Light();
   Light(unsigned int shadowWidth, unsigned int shadowHeight, float red,
         float green, float blue, float amIntensity, float dIntensity);
 
-  ~Light();
+  virtual ~Light() = 0;
 
 protected:
   glm::vec3 color;

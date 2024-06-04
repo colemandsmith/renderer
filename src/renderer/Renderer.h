@@ -10,10 +10,11 @@
 
 class Renderer {
 public:
-  // virtual ~Renderer();
+  virtual ~Renderer();
 
   // Setup
   virtual bool SetupViewport(Window* window) = 0;
+  virtual void ClearWindow() = 0;
 
   // Rendering
   virtual void UseTexture(const Texture *texture) = 0;

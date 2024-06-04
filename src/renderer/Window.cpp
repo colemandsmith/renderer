@@ -22,7 +22,7 @@ Window::Window(int windowWidth, int windowHeight) {
     yChange = 0.0f;
 }
 
-int Window::Initialize() {
+int Window::Initialize(GraphicsApi graphicsApi) {
     // Initialize GLFW
     if (!glfwInit()) {
         printf("GLFW initialization failed");
@@ -30,6 +30,22 @@ int Window::Initialize() {
         return 1;
     }
 
+    // Ideally, it would be best to keep the API-specific logic
+    // tucked away in API-specific rendering/device classes. Using GLFW 
+    // for window creation makes this a bit of a special case since there
+    // is already some coupling of GLFW and OpenGL behavior.
+    // Due to this, it seemed acceptable to separate out some specific blocks related to the
+    // creation of the OpenGL context within the window initialization itself.
+    if (graphicsApi == GraphicsApi::OPENGL) {
+      // Set up GLFW window properties
+      // OpenGL version
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+      // Core profile = not backwards compatibility
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+      // Allow forward compatibility
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    }
     mainWindow = glfwCreateWindow(width, height, "Test Window", NULL, NULL);
     if (!mainWindow) {
         printf("GLFW window creation failed!");
@@ -38,12 +54,40 @@ int Window::Initialize() {
     }
 
     glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
+
+    if (graphicsApi == GraphicsApi::OPENGL) {
+      // Set context for GLEW to use
+      glfwMakeContextCurrent(mainWindow);
+
+      // Allow modern extension features
+      glewExperimental = GL_TRUE;
+
+      if (glewInit() != GLEW_OK) {
+          printf("GLEW initalization failed!");
+          glfwDestroyWindow(mainWindow);
+          glfwTerminate();
+          return 1;
+      }
+
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(GL_LESS);
+      glEnable(GL_CULL_FACE);
+
+      // Set up viewport size
+      glViewport(0, 0, bufferWidth, bufferHeight);
+    }
+
+
     // Handle key + mouse input
     createCallBacks();
     glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetWindowUserPointer(mainWindow, this);
     return 1;
+}
+
+void Window::PollEvents() const {
+  glfwPollEvents();
 }
 
 void Window::handleKeys(GLFWwindow* window, int key, int code, int action, int mode) {

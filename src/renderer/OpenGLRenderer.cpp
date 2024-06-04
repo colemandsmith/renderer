@@ -6,46 +6,23 @@ OpenGLRenderer::OpenGLRenderer() {
   std::cout << "Initialized renderer!" << std::endl;
 }
 
-bool OpenGLRenderer::SetupViewport(Window* window) {
-    // Set up GLFW window properties
-    // OpenGL version
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-    // Core profile = not backwards compatibility
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Allow forward compatibility
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    // Set context for GLEW to use
-    glfwMakeContextCurrent(window->GetGlfwWindow());
-
-    // Allow modern extension features
-    glewExperimental = GL_TRUE;
-
-    if (glewInit() != GLEW_OK) {
-        printf("GLEW initalization failed!");
-        return false;
-    }
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
-
-    // Set up viewport size
-    glViewport(0, 0, window->GetBufferWidth(), window->GetBufferHeight());
-    return true;
+bool OpenGLRenderer::SetupViewport(Window *window) {
+  // No-op; GL-specific setup is handled by the window class itself
+  return true;
 }
 
-void OpenGLRenderer::UseShader(const Shader *shader) {
-
+void OpenGLRenderer::ClearWindow() {
+  glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
+
+void OpenGLRenderer::UseShader(const Shader *shader) {}
 
 void OpenGLRenderer::UseMaterial(const Material *material) {
   if (material == nullptr)
     return;
   const ShaderId matShaderId = material->GetShaderId();
-  const Shader* shader = shaderManager.GetShaderById(matShaderId);
+  const Shader *shader = shaderManager.GetShaderById(matShaderId);
   if (shader) {
     glUniform1f(shader->GetSpecularIntensityLocation(),
                 material->GetSpecularIntensity());

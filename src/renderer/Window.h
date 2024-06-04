@@ -5,12 +5,14 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#include "GraphicsApi.h"
+
 class Window {
 public:
   Window();
   Window(int windowWidth, int windowHeight);
 
-  int Initialize();
+  int Initialize(GraphicsApi graphicsApi);
 
   int GetBufferWidth() const { return bufferWidth; };
   int GetBufferHeight() const { return bufferHeight; };
@@ -18,6 +20,7 @@ public:
 
   bool getShouldClose() const { return glfwWindowShouldClose(mainWindow); }
 
+  void PollEvents() const;
   const bool *getKeys() const { return keys; }
   float getXChange();
   float getYChange();

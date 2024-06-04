@@ -183,10 +183,10 @@ void RenderScene(Renderer *renderer) {
 
 void MainRenderPass(Renderer *renderer, glm::mat4 projection,
                     glm::mat4 view) {
-  glViewport(0, 0, 1920, 1080);
+  glViewport(0, 0, 1366, 768);
 
   // clear window
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   defaultShader->UseShader();
@@ -302,11 +302,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id,
 int main() {
   RenderEngine engine;
   SetupObjects(engine.GetRenderer());
-  glm::mat4 projection =
-      glm::perspective(glm::radians(60.0f),
-                       (float)engine.GetWindow()->GetBufferWidth() /
-                           (float)engine.GetWindow()->GetBufferHeight(),
-                       0.1f, 100.0f);
+
   int flags;
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
   if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -326,12 +322,13 @@ int main() {
     lastTime = now;
 
     // Get and handle user input events
-    glfwPollEvents();
+    engine.GetWindow()->PollEvents();
 
     camera.KeyControl(engine.GetWindow()->getKeys(), deltaTime);
     camera.mouseControl(engine.GetWindow()->getXChange(), engine.GetWindow()->getYChange());
 
-    PerformRenderPasses(engine.GetRenderer(), projection);
+    engine.Render();
+    // PerformRenderPasses(engine.GetRenderer(), projection);
 
     engine.GetWindow()->SwapBufffers();
   }
