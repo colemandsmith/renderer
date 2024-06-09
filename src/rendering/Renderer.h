@@ -1,12 +1,12 @@
 #pragma once
 
 // forward declarations
-#include "Texture.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "SpotLight.h"
-#include "PointLight.h"
-#include "Window.h"
+#include "resources/Texture.h"
+#include "resources/Material.h"
+#include "resources/Mesh.h"
+#include "resources/SpotLight.h"
+#include "resources/PointLight.h"
+#include "rendering/Window.h"
 
 class Renderer {
 public:

@@ -5,16 +5,15 @@
 
 #include <glm/glm.hpp>
 
-#include "Renderer.h"
-#include "Camera.h"
+#include "rendering/Renderer.h"
+#include "rendering/Camera.h"
 #include "CommonValues.h"
-#include "Mesh.h"
-#include "RenderObject.h"
-#include "Shader.h"
-#include "ShaderManager.h"
-#include "SpotLight.h"
-#include "Texture.h"
-#include "Window.h"
+#include "resources/Mesh.h"
+#include "rendering/Shader.h"
+#include "rendering/ShaderManager.h"
+#include "resources/SpotLight.h"
+#include "resources/Texture.h"
+#include "rendering/Window.h"
 
 struct MeshBindingData {
   unsigned int VAO = 0;

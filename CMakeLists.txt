@@ -79,29 +79,34 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 set(SOURCES
-    src/renderer/Camera.cpp
-    src/renderer/DirectionalLight.cpp
-    src/renderer/Light.cpp
-    src/renderer/main_renderer.cpp
-    src/renderer/Material.cpp
-    src/renderer/Mesh.cpp
-    # src/renderer/Model.cpp
-    src/renderer/RenderEngine.cpp
-    src/renderer/Renderer.cpp
-    src/renderer/OpenGLRenderer.cpp
-    src/renderer/OmniShadowMap.cpp
-    src/renderer/PointLight.cpp
-    # src/renderer/RenderObject.cpp
-    #src/renderer/Scene.cpp
-    src/renderer/Shader.cpp
-    src/renderer/ShaderManager.cpp
-    src/renderer/ShadowMap.cpp
-    # src/renderer/Skybox.cpp
-    src/renderer/SpotLight.cpp
-    src/renderer/Texture.cpp
-    src/renderer/Window.cpp
+    src/rendering/Camera.cpp
+    src/resources/DirectionalLight.cpp
+    src/resources/Light.cpp
+    src/main_renderer.cpp
+    src/resources/Material.cpp
+    src/resources/Mesh.cpp
+    # src/resources/Model.cpp
+    src/rendering/RenderEngine.cpp
+    src/rendering/Renderer.cpp
+    src/rendering/OpenGLRenderer.cpp
+    src/resources/OmniShadowMap.cpp
+    src/resources/PointLight.cpp
+    # src/resources/RenderObject.cpp
+    #src/resources/Scene.cpp
+    src/rendering/Shader.cpp
+    src/rendering/ShaderManager.cpp
+    src/resources/ShadowMap.cpp
+    # src/resources/Skybox.cpp
+    src/resources/SpotLight.cpp
+    src/resources/Texture.cpp
+    src/rendering/Window.cpp
 )
 list(APPEND INCLUDE_DIRS ${EXT_INCLUDE_DIRS})
+# Gives nice relative include paths from the root
+list(APPEND INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src")
+
+# for IDEs
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" FILES ${SOURCES})
 
 include_directories(${INCLUDE_DIRS})
 

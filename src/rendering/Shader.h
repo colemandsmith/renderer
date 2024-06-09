@@ -10,9 +10,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "CommonValues.h"
-#include "DirectionalLight.h"
-#include "PointLight.h"
-#include "SpotLight.h"
+#include "resources/DirectionalLight.h"
+#include "resources/PointLight.h"
+#include "resources/SpotLight.h"
 
 
 typedef int ShaderId;

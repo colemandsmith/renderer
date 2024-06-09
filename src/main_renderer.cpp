@@ -14,10 +14,10 @@
 
 #include "CommonValues.h"
 
-#include "DirectionalLight.h"
-#include "Mesh.h"
-#include "RenderEngine.h"
-#include "Shader.h"
+#include "resources/DirectionalLight.h"
+#include "resources/Mesh.h"
+#include "rendering/RenderEngine.h"
+#include "rendering/Shader.h"
 
 Camera camera;
 

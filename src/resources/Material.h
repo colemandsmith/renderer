@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Shader.h"
 #include <GL/glew.h>
 #include <memory>
+#include "rendering/Shader.h"
 
 class Material {
 public:

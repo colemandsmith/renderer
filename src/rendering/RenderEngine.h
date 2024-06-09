@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "GraphicsApi.h"
-#include "OpenGLRenderer.h"
-#include "Renderer.h"
-#include "ShaderManager.h"
-#include "Window.h"
+#include "rendering/GraphicsApi.h"
+#include "rendering/OpenGLRenderer.h"
+#include "rendering/Renderer.h"
+#include "rendering/ShaderManager.h"
+#include "rendering/Window.h"
 
 class RenderEngine {
 public:
