@@ -39,7 +39,7 @@ void OpenGLRenderer::UseTexture(const Texture *texture,
   if (texture == nullptr)
     return;
   unsigned int textureId = textureBindings[texture];
-  glActiveTexture(GL_TEXTURE1 + textureUnit);
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
   glBindTexture(GL_TEXTURE_2D, textureId);
 }
 

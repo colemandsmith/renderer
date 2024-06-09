@@ -8,6 +8,7 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "ShadowMap.h"
+#include "OmniShadowMap.h"
 
 class LightManager {
 public:
@@ -17,10 +18,12 @@ public:
   void AddLight(DirectionalLight* toAdd);
   void AddLight(PointLight* toAdd);
   void AddLight(SpotLight* toAdd);
+
 private:
   // TODO remove restrictions
-  DirectionalLight* dLight;
-  std::unordered_map<LightId, PointLight*> pointLightMap;
-  std::unordered_map<LightId, SpotLight*> spotLightMap;
+  DirectionalLight* dLight = nullptr;
+  ShadowMap* directionalShadowMap = nullptr;
+  std::unordered_map<PointLight*, OmniShadowMap*> pointLightToShadowMap;
+  std::unordered_map<SpotLight*, OmniShadowMap*> spotLightToShadowMap;
 };
 

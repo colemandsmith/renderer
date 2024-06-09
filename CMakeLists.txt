@@ -79,30 +79,30 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 set(SOURCES
+    src/main_renderer.cpp
     src/rendering/Camera.cpp
+    src/rendering/OpenGLRenderer.cpp
+    src/rendering/RenderEngine.cpp
+    src/rendering/Renderer.cpp
+    src/rendering/Shader.cpp
+    src/rendering/ShaderManager.cpp
+    src/rendering/Window.cpp
     src/resources/DirectionalLight.cpp
     src/resources/Light.cpp
-    src/main_renderer.cpp
     src/resources/Material.cpp
     src/resources/Mesh.cpp
     # src/resources/Model.cpp
-    src/rendering/RenderEngine.cpp
-    src/rendering/Renderer.cpp
-    src/rendering/OpenGLRenderer.cpp
     src/resources/OmniShadowMap.cpp
     src/resources/PointLight.cpp
     # src/resources/RenderObject.cpp
     #src/resources/Scene.cpp
-    src/rendering/Shader.cpp
-    src/rendering/ShaderManager.cpp
     src/resources/ShadowMap.cpp
     # src/resources/Skybox.cpp
     src/resources/SpotLight.cpp
     src/resources/Texture.cpp
-    src/rendering/Window.cpp
 )
 list(APPEND INCLUDE_DIRS ${EXT_INCLUDE_DIRS})
-# Gives nice relative include paths from the root
+# Gives nice relative include paths from the root src/ folder
 list(APPEND INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src")
 
 # for IDEs
