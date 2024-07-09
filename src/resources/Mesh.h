@@ -6,18 +6,19 @@
 
 class Mesh {
 public:
-    Mesh();
+  Mesh();
 
-    void CreateMesh(float *vertices, unsigned int *indices, unsigned int numOfVertices, unsigned int numOfIndices);
+  void CreateMesh(float *vertices, unsigned int *indices,
+                  unsigned int numOfVertices, unsigned int numOfIndices);
 
-    float* GetVertices(int &out_numVertices) const;
-    unsigned int* GetIndices(int &out_numIndices) const;
-    
-    ~Mesh();
+  float *GetVertices(int &out_numVertices) const;
+  unsigned int *GetIndices(int &out_numIndices) const;
+
+  ~Mesh();
 
 private:
-    float *vertices;
-    unsigned int *indices;
-    unsigned int numVertices;
-    unsigned int numIndices;
+  float *vertices;
+  unsigned int *indices;
+  unsigned int numVertices;
+  unsigned int numIndices;
 };

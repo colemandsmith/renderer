@@ -1,11 +1,11 @@
 #pragma once
 
-#include "resources/Texture.h"
+#include "rendering/Window.h"
 #include "resources/Material.h"
 #include "resources/Mesh.h"
-#include "resources/SpotLight.h"
 #include "resources/PointLight.h"
-#include "rendering/Window.h"
+#include "resources/SpotLight.h"
+#include "resources/Texture.h"
 
 class RenderDevice {
   virtual ~RenderDevice();
