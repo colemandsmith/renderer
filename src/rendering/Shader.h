@@ -58,9 +58,8 @@ public:
   void SetDirectionalLightTransform(glm::mat4 *lTransform);
   void SetLightMatrices(std::vector<glm::mat4> lightMatrices);
 
-  const inline GLuint GetShaderId() { return shaderId; }
+  const inline GLuint GetShaderId() const { return shaderId; }
 
-  void UseShader();
   void ClearShader();
 
   ~Shader();

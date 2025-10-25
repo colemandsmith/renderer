@@ -352,10 +352,6 @@ void Shader::SetLightMatrices(std::vector<glm::mat4> lightMatrices) {
     }
 }
 
-void Shader::UseShader() {
-    glUseProgram(shaderId);
-}
-
 void Shader::ClearShader() {
     if (shaderId != 0) {
         glDeleteProgram(shaderId);

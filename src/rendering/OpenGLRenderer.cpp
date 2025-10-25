@@ -16,7 +16,9 @@ void OpenGLRenderer::ClearWindow() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void OpenGLRenderer::UseShader(const Shader *shader) {}
+void OpenGLRenderer::UseShader(const Shader *shader) {
+  glUseProgram(shader->GetShaderId());
+}
 
 void OpenGLRenderer::UseMaterial(const Material *material) {
   if (material == nullptr)

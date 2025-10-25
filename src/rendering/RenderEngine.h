@@ -14,6 +14,7 @@ public:
   ~RenderEngine();
 
   Renderer *GetRenderer() { return renderer.get(); }
+  ShaderManager *GetShaderManager() { return shaderManager.get(); }
   Window *GetWindow() { return mainWindow.get(); }
 
   // Perform forward rendering

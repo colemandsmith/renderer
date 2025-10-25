@@ -39,7 +39,7 @@ void RenderEngine::Render() {
 }
 
 void RenderEngine::MainRenderPass() {
-
+  
 }
 
 RenderEngine::~RenderEngine() {

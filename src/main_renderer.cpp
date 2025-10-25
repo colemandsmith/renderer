@@ -27,9 +27,6 @@ Shader *defaultShader;
 Texture *brickTexture;
 Texture *dirtTexture;
 
-Material *shinyMaterial;
-Material *dullMaterial;
-
 DirectionalLight mainLight;
 // PointLight pointLights[MAX_POINT_LIGHTS];
 // SpotLight spotLights[MAX_SPOT_LIGHTS];
@@ -41,15 +38,11 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0,
        uniformEyePosition = 0, uniformSpecularIntensity = 0,
        uniformShininess = 0, uniformOmniLightPos, uniformFarPlane;
 
-static const char *vShader = "Shaders/shader.vert";
-static const char *fShader = "Shaders/shader.frag";
+static const char *vShader = "shaders/shader.vert";
+static const char *fShader = "shaders/shader.frag";
 
-void CreateShaders() {
-  defaultShader = new Shader();
-  defaultShader->CreateFromFiles(vShader, fShader);
-
-  shinyMaterial = new Material(defaultShader->GetShaderId(), 4.0f, 256.0f);
-  dullMaterial = new Material(defaultShader->GetShaderId(), 0.3f, 0);
+ShaderId CreateShaders(ShaderManager* shaderManager) {
+  return shaderManager->AddShaderFromFiles(vShader, fShader);
 }
 
 void CalcAverageNormals(unsigned int *indices, unsigned int indexCount,
@@ -137,10 +130,11 @@ void CreateSimplePolygons(Renderer *renderer) {
   }
 }
 
-void SetupObjects(Renderer *renderer) {
+void SetupObjects(Renderer *renderer, ShaderId shaderId) {
+  Material* shinyMaterial = new Material(shaderId, 4.0f, 256.0f);
+  Material* dullMaterial = new Material(shaderId, 0.3f, 0.0f);
 
   CreateSimplePolygons(renderer);
-  CreateShaders();
 
   camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 5.0f, 0.5f);
@@ -188,8 +182,6 @@ void MainRenderPass(Renderer *renderer, glm::mat4 projection,
   // clear window
   glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-  defaultShader->UseShader();
 
   uniformModel = defaultShader->GetModelLocation();
   uniformProjection = defaultShader->GetProjectionLocation();
@@ -301,7 +293,8 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id,
 
 int main() {
   RenderEngine engine;
-  SetupObjects(engine.GetRenderer());
+  ShaderId defaultShaderId = CreateShaders(engine.GetShaderManager());
+  SetupObjects(engine.GetRenderer(), defaultShaderId);
 
   int flags;
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
