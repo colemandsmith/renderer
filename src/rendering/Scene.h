@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#include <yaml-cpp/yaml.h>
+#include <ryml.hpp>
 
 #include "Mesh.h"
 #include "Shader.h"

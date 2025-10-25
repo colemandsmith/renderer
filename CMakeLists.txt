@@ -23,7 +23,7 @@ set(LIBS
 FetchContent_Declare(
   glm
   GIT_REPOSITORY  https://github.com/g-truc/glm.git
-  GIT_TAG   1.0.1
+  GIT_TAG   1.0.2
   FIND_PACKAGE_ARGS NAMES glm
 )
 FetchContent_MakeAvailable(glm)
@@ -32,17 +32,17 @@ list(APPEND LIBS glm::glm)
 set(YAML_CPP_BUILD_TOOLS OFF CACHE INTERNAL "Disable parse tools")
 
 FetchContent_Declare(
-  yaml-cpp
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG 0.8.0
+  rapidyaml
+  GIT_REPOSITORY https://github.com/biojppm/rapidyaml.git
+  GIT_TAG v0.10.0
 )
-FetchContent_MakeAvailable(yaml-cpp)
-list(APPEND LIBS yaml-cpp::yaml-cpp)
+FetchContent_MakeAvailable(rapidyaml)
+list(APPEND LIBS ryml)
 
 FetchContent_Declare(
   assimp
   GIT_REPOSITORY https://github.com/assimp/assimp.git
-  GIT_TAG v5.4.0
+  GIT_TAG v6.0.2
   FIND_PACKAGE_ARGS NAMES assimp
 )
 FetchContent_MakeAvailable(assimp)
@@ -53,14 +53,15 @@ list(APPEND LIBS assimp)
 FetchContent_Declare(
   glew
   GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
-  GIT_TAG glew-cmake-2.2.0
+  GIT_TAG d06782b910213d675925e6e51a69ad0fd1fe1f23 # 2025-10-23
   FIND_PACKAGE_ARGS NAMES GLEW
 )
 FetchContent_GetProperties(glew)
+
 if(NOT glew_POPULATED)
-  FetchContent_Populate(glew)
-  add_subdirectory(${glew_SOURCE_DIR} ${glew_BINARY_DIR} EXCLUDE_FROM_ALL)
+  FetchContent_MakeAvailable(glew)
 endif()
+
 list(APPEND LIBS libglew_static)
 
 FetchContent_Declare(
